@@ -1,6 +1,7 @@
 const express = require("express");
 const cors = require("cors");
 const { GoogleAuth } = require("google-auth-library");
+const { URL } = require("url");
 
 const app = express();
 const PORT = Number(process.env.PORT || 10000);
@@ -101,6 +102,60 @@ function requireVertexConfig(res) {
   }
   return true;
 }
+
+function buildSupabaseProxyUrl(req) {
+  const base = `${SUPABASE_URL}${req.originalUrl.replace(/^\/api\/supabase/, "")}`;
+  return new URL(base);
+}
+
+function readProxyBody(req) {
+  if (req.method === "GET" || req.method === "HEAD") {
+    return undefined;
+  }
+  if (req.body === undefined || req.body === null) {
+    return undefined;
+  }
+  if (typeof req.body === "string") {
+    return req.body;
+  }
+  return JSON.stringify(req.body);
+}
+
+app.all("/api/supabase/*", async (req, res) => {
+  if (!requireSupabaseConfig(res)) {
+    return;
+  }
+
+  const targetUrl = buildSupabaseProxyUrl(req).toString();
+  const headers = {
+    apikey: SUPABASE_ANON_KEY,
+    Accept: req.headers.accept || "application/json",
+  };
+  if (typeof req.headers.authorization === "string") {
+    headers.Authorization = req.headers.authorization;
+  }
+  if (typeof req.headers["content-type"] === "string") {
+    headers["Content-Type"] = req.headers["content-type"];
+  }
+
+  try {
+    const upstream = await fetch(targetUrl, {
+      method: req.method,
+      headers,
+      body: readProxyBody(req),
+    });
+    const contentType = upstream.headers.get("content-type");
+    if (contentType) {
+      res.setHeader("Content-Type", contentType);
+    }
+
+    const responseText = await upstream.text();
+    res.status(upstream.status).send(responseText);
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Supabase proxy request failed.";
+    res.status(502).json({ error: message });
+  }
+});
 
 async function supabaseAuthRequest(path, { method = "GET", body, accessToken } = {}) {
   const headers = {
