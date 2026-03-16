@@ -1,0 +1,30 @@
+plugins {
+  id 'com.android.library'
+  id 'expo-module-gradle-plugin'
+}
+
+group = 'expo.modules.mofitnesspose'
+version = '0.7.9'
+
+repositories {
+  google()
+  mavenCentral()
+}
+
+android {
+  namespace "expo.modules.mofitnesspose"
+  defaultConfig {
+    versionCode 1
+    versionName "0.7.9"
+  }
+  lintOptions {
+    abortOnError false
+  }
+}
+
+dependencies {
+  implementation "androidx.camera:camera-camera2:1.4.2"
+  implementation "androidx.camera:camera-lifecycle:1.4.2"
+  implementation "androidx.camera:camera-view:1.4.2"
+  implementation "com.google.mediapipe:tasks-vision:0.20230731"
+}

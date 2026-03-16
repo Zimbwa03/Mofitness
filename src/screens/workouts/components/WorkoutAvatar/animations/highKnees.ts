@@ -1,0 +1,71 @@
+import { createAnimation } from "./shared";
+
+export const highKneesAnimation = createAnimation(
+  "High Knees",
+  740,
+  [
+    {
+      t: 0,
+      torso: { rotate: 4, translateX: 0, translateY: 0 },
+      thighL: { rotate: 34, translateX: -4, translateY: -4 },
+      shinL: { rotate: 40, translateX: -3, translateY: -2 },
+      thighR: { rotate: -18, translateX: 3, translateY: 8 },
+      shinR: { rotate: 12, translateX: 2, translateY: 8 },
+      upperArmL: { rotate: -24, translateX: -2, translateY: 4 },
+      upperArmR: { rotate: 24, translateX: 2, translateY: 4 },
+    },
+    {
+      t: 0.25,
+      torso: { rotate: 4, translateX: 0, translateY: -2 },
+      thighL: { rotate: 8, translateX: -2, translateY: 2 },
+      shinL: { rotate: 18, translateX: -1, translateY: 3 },
+      thighR: { rotate: 8, translateX: 2, translateY: 2 },
+      shinR: { rotate: 18, translateX: 1, translateY: 3 },
+      upperArmL: { rotate: 0, translateX: -1, translateY: 4 },
+      upperArmR: { rotate: 0, translateX: 1, translateY: 4 },
+    },
+    {
+      t: 0.5,
+      torso: { rotate: 4, translateX: 0, translateY: 0 },
+      thighL: { rotate: -18, translateX: -3, translateY: 8 },
+      shinL: { rotate: 12, translateX: -2, translateY: 8 },
+      thighR: { rotate: 34, translateX: 4, translateY: -4 },
+      shinR: { rotate: 40, translateX: 3, translateY: -2 },
+      upperArmL: { rotate: 24, translateX: -2, translateY: 4 },
+      upperArmR: { rotate: -24, translateX: 2, translateY: 4 },
+    },
+    {
+      t: 0.75,
+      torso: { rotate: 4, translateX: 0, translateY: -2 },
+      thighL: { rotate: 8, translateX: -2, translateY: 2 },
+      shinL: { rotate: 18, translateX: -1, translateY: 3 },
+      thighR: { rotate: 8, translateX: 2, translateY: 2 },
+      shinR: { rotate: 18, translateX: 1, translateY: 3 },
+      upperArmL: { rotate: 0, translateX: -1, translateY: 4 },
+      upperArmR: { rotate: 0, translateX: 1, translateY: 4 },
+    },
+    {
+      t: 1,
+      torso: { rotate: 4, translateX: 0, translateY: 0 },
+      thighL: { rotate: 34, translateX: -4, translateY: -4 },
+      shinL: { rotate: 40, translateX: -3, translateY: -2 },
+      thighR: { rotate: -18, translateX: 3, translateY: 8 },
+      shinR: { rotate: 12, translateX: 2, translateY: 8 },
+      upperArmL: { rotate: -24, translateX: -2, translateY: 4 },
+      upperArmR: { rotate: 24, translateX: 2, translateY: 4 },
+    },
+  ],
+  ["Drive knees hip height", "Stay on forefoot", "Pump arms fast"],
+  {
+    phase: "concentric",
+    repPhases: {
+      concentric: { start: 0, end: 0.5, label: "Left knee drive" },
+      eccentric: { start: 0.5, end: 1, label: "Right knee drive" },
+    },
+    style: {
+      interpolation: "sine",
+      transitionMs: 170,
+      shadowPulse: 1.35,
+    },
+  },
+);

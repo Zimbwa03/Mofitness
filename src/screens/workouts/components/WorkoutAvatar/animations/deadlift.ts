@@ -1,0 +1,76 @@
+import { createAnimation } from "./shared";
+
+export const deadliftAnimation = createAnimation(
+  "Deadlift",
+  2450,
+  [
+    {
+      t: 0,
+      torso: { rotate: 4, translateX: 0, translateY: 4 },
+      thighL: { rotate: -16, translateX: -1, translateY: 4 },
+      thighR: { rotate: -16, translateX: 1, translateY: 4 },
+      shinL: { rotate: 18, translateX: -1, translateY: 4 },
+      shinR: { rotate: 18, translateX: 1, translateY: 4 },
+      upperArmL: { rotate: 20, translateX: -1, translateY: 8 },
+      upperArmR: { rotate: -20, translateX: 1, translateY: 8 },
+    },
+    {
+      t: 0.22,
+      torso: { rotate: 16, translateX: 0, translateY: 12 },
+      thighL: { rotate: -26, translateX: -1, translateY: 10 },
+      thighR: { rotate: -26, translateX: 1, translateY: 10 },
+      shinL: { rotate: 24, translateX: -1, translateY: 9 },
+      shinR: { rotate: 24, translateX: 1, translateY: 9 },
+    },
+    {
+      t: 0.52,
+      torso: { rotate: 34, translateX: 0, translateY: 24 },
+      thighL: { rotate: -44, translateX: -2, translateY: 16 },
+      thighR: { rotate: -44, translateX: 2, translateY: 16 },
+      upperArmL: { rotate: 22, translateX: -1, translateY: 18 },
+      upperArmR: { rotate: -22, translateX: 1, translateY: 18 },
+    },
+    {
+      t: 0.62,
+      torso: { rotate: 38, translateX: 0, translateY: 28 },
+      thighL: { rotate: -52, translateX: -2, translateY: 20 },
+      thighR: { rotate: -52, translateX: 2, translateY: 20 },
+      shinL: { rotate: 20, translateX: -1, translateY: 12 },
+      shinR: { rotate: 20, translateX: 1, translateY: 12 },
+      upperArmL: { rotate: 24, translateX: -1, translateY: 21 },
+      upperArmR: { rotate: -24, translateX: 1, translateY: 21 },
+    },
+    {
+      t: 0.86,
+      torso: { rotate: 4, translateX: 0, translateY: 4 },
+      thighL: { rotate: -10, translateX: 0, translateY: 2 },
+      thighR: { rotate: -10, translateX: 0, translateY: 2 },
+      shinL: { rotate: 8, translateX: 0, translateY: 2 },
+      shinR: { rotate: 8, translateX: 0, translateY: 2 },
+      head: { rotate: 0, translateX: 0, translateY: -1 },
+    },
+    {
+      t: 1,
+      torso: { rotate: 0, translateX: 0, translateY: 0 },
+      thighL: { rotate: 0, translateX: 0, translateY: 0 },
+      thighR: { rotate: 0, translateX: 0, translateY: 0 },
+      shinL: { rotate: 0, translateX: 0, translateY: 0 },
+      shinR: { rotate: 0, translateX: 0, translateY: 0 },
+      upperArmL: { rotate: 6, translateX: 0, translateY: 0 },
+      upperArmR: { rotate: -6, translateX: 0, translateY: 0 },
+    },
+  ],
+  ["Hinge from hips", "Keep lats tight", "Drive floor away"],
+  {
+    phase: "concentric",
+    repPhases: {
+      eccentric: { start: 0, end: 0.62, label: "Hip hinge down" },
+      concentric: { start: 0.62, end: 1, label: "Stand tall" },
+    },
+    style: {
+      interpolation: "smoothstep",
+      transitionMs: 260,
+      shadowPulse: 1.2,
+    },
+  },
+);

@@ -1,0 +1,12 @@
+{
+  "name": "mofitness-pose",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "types": "index.ts",
+  "sideEffects": false,
+  "peerDependencies": {
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}

@@ -1,0 +1,76 @@
+import { createAnimation } from "./shared";
+
+export const hipFlexorStretchAnimation = createAnimation(
+  "Hip Flexor Stretch",
+  3600,
+  [
+    {
+      t: 0,
+      torso: { rotate: 2, translateX: 0, translateY: 4 },
+      thighL: { rotate: -18, translateX: -3, translateY: 7 },
+      shinL: { rotate: 18, translateX: -3, translateY: 9 },
+      thighR: { rotate: 18, translateX: 3, translateY: 5 },
+      shinR: { rotate: -8, translateX: 2, translateY: 6 },
+      upperArmL: { rotate: 10, translateX: 0, translateY: 2 },
+      upperArmR: { rotate: -10, translateX: 0, translateY: 2 },
+    },
+    {
+      t: 0.22,
+      torso: { rotate: 7, translateX: 0, translateY: 14 },
+      thighL: { rotate: -48, translateX: -5, translateY: 14 },
+      shinL: { rotate: 44, translateX: -4, translateY: 16 },
+      thighR: { rotate: 30, translateX: 4, translateY: 11 },
+      shinR: { rotate: 6, translateX: 3, translateY: 9 },
+      head: { rotate: 1, translateX: 0, translateY: -1 },
+      upperArmL: { rotate: 16, translateX: 0, translateY: 8 },
+      upperArmR: { rotate: -16, translateX: 0, translateY: 8 },
+    },
+    {
+      t: 0.52,
+      torso: { rotate: 12, translateX: 0, translateY: 22 },
+      thighL: { rotate: -68, translateX: -6, translateY: 21 },
+      shinL: { rotate: 64, translateX: -5, translateY: 23 },
+      thighR: { rotate: 38, translateX: 4, translateY: 16 },
+      shinR: { rotate: 12, translateX: 3, translateY: 12 },
+      head: { rotate: 2, translateX: 0, translateY: -2 },
+      upperArmL: { rotate: 18, translateX: 0, translateY: 10 },
+      upperArmR: { rotate: -18, translateX: 0, translateY: 10 },
+    },
+    {
+      t: 0.74,
+      torso: { rotate: 12, translateX: 0, translateY: 24 },
+      thighL: { rotate: -72, translateX: -6, translateY: 22 },
+      shinL: { rotate: 66, translateX: -5, translateY: 24 },
+      thighR: { rotate: 40, translateX: 4, translateY: 16 },
+      shinR: { rotate: 14, translateX: 3, translateY: 12 },
+      head: { rotate: 2, translateX: 0, translateY: -2 },
+      upperArmL: { rotate: 18, translateX: 0, translateY: 10 },
+      upperArmR: { rotate: -18, translateX: 0, translateY: 10 },
+    },
+    {
+      t: 1,
+      torso: { rotate: 2, translateX: 0, translateY: 4 },
+      thighL: { rotate: -18, translateX: -3, translateY: 7 },
+      shinL: { rotate: 18, translateX: -3, translateY: 9 },
+      thighR: { rotate: 18, translateX: 3, translateY: 5 },
+      shinR: { rotate: -8, translateX: 2, translateY: 6 },
+      upperArmL: { rotate: 10, translateX: 0, translateY: 2 },
+      upperArmR: { rotate: -10, translateX: 0, translateY: 2 },
+    },
+  ],
+  ["Tuck pelvis slightly", "Drive hips forward gently", "Keep chest tall and breathe slowly"],
+  {
+    phase: "isometric",
+    repPhases: {
+      eccentric: { start: 0, end: 0.52, label: "Enter stretch position" },
+      isometric: { start: 0.52, end: 0.74, label: "Hold stretch and breathe" },
+      concentric: { start: 0.74, end: 1, label: "Ease out of stretch" },
+    },
+    style: {
+      interpolation: "smoothstep",
+      transitionMs: 260,
+      shadowPulse: 0.95,
+    },
+  },
+);
+

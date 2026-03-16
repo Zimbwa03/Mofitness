@@ -1,0 +1,136 @@
+:root {
+  color-scheme: light;
+
+  /* Brand */
+  --color-primary-900: #0b1f3a;
+  --color-primary-700: #1f3b5c;
+
+  /* Neutrals */
+  --color-neutral-500: #a7b1be;
+  --color-neutral-200: #e6e9ee;
+  --color-neutral-100: #f3f5f8;
+  --color-white: #ffffff;
+
+  /* Text */
+  --color-text-strong: #0b1f3a;
+  --color-text-body: #24384f;
+  --color-text-muted: #5f6c7b;
+  --color-text-inverse: #ffffff;
+
+  /* Surfaces */
+  --color-bg-app: #ffffff;
+  --color-bg-subtle: #f3f5f8;
+  --color-bg-panel: #e6e9ee;
+  --color-bg-nav: #0b1f3a;
+  --color-bg-nav-accent: #1f3b5c;
+
+  /* Borders */
+  --color-border-soft: #d8dee6;
+  --color-border-strong: #a7b1be;
+
+  /* States */
+  --color-focus-ring: #1f3b5c;
+  --color-success: #2f6f5e;
+  --color-warning: #b86a1f;
+  --color-danger: #b23a3a;
+
+  /* Typography */
+  --font-family-base: "Inter", "SF Pro Text", "Segoe UI", "Roboto", sans-serif;
+  --font-family-heading: "Inter", "SF Pro Display", "Segoe UI", "Roboto", sans-serif;
+
+  --font-size-caption: 0.75rem;
+  --font-size-body-sm: 0.875rem;
+  --font-size-body: 1rem;
+  --font-size-h4: 1.25rem;
+  --font-size-h3: 1.5rem;
+  --font-size-h2: 2rem;
+  --font-size-h1: 2.5rem;
+
+  --line-height-caption: 1.4;
+  --line-height-body: 1.5;
+  --line-height-heading-tight: 1.05;
+  --line-height-heading: 1.2;
+
+  --letter-spacing-tight: -0.04em;
+  --letter-spacing-normal: 0;
+
+  --font-weight-regular: 400;
+  --font-weight-medium: 500;
+  --font-weight-semibold: 600;
+  --font-weight-bold: 700;
+
+  /* Spacing */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.5rem;
+  --space-6: 2rem;
+  --space-7: 2.5rem;
+  --space-8: 3rem;
+  --space-9: 4rem;
+
+  /* Radius */
+  --radius-sm: 0.5rem;
+  --radius-md: 0.75rem;
+  --radius-lg: 1rem;
+  --radius-xl: 1.5rem;
+  --radius-pill: 9999px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 3px rgba(11, 31, 58, 0.08);
+  --shadow-md: 0 8px 24px rgba(11, 31, 58, 0.1);
+  --shadow-lg: 0 20px 48px rgba(11, 31, 58, 0.14);
+
+  /* Layout */
+  --content-max-width: 80rem;
+  --nav-height: 4rem;
+  --button-height-sm: 2.5rem;
+  --button-height-md: 3rem;
+  --icon-size-sm: 1rem;
+  --icon-size-md: 1.25rem;
+  --icon-size-lg: 1.5rem;
+}
+
+body {
+  margin: 0;
+  font-family: var(--font-family-base);
+  font-size: var(--font-size-body);
+  line-height: var(--line-height-body);
+  color: var(--color-text-body);
+  background: var(--color-bg-app);
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  margin: 0;
+  font-family: var(--font-family-heading);
+  font-weight: var(--font-weight-bold);
+  color: var(--color-text-strong);
+}
+
+h1 {
+  font-size: var(--font-size-h1);
+  line-height: var(--line-height-heading-tight);
+  letter-spacing: var(--letter-spacing-tight);
+}
+
+h2 {
+  font-size: var(--font-size-h2);
+  line-height: 1.15;
+  letter-spacing: -0.03em;
+}
+
+h3 {
+  font-size: var(--font-size-h3);
+  line-height: var(--line-height-heading);
+}
+
+h4 {
+  font-size: var(--font-size-h4);
+  line-height: 1.25;
+}

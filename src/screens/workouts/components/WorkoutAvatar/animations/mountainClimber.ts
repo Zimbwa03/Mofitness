@@ -1,0 +1,71 @@
+import { createAnimation } from "./shared";
+
+export const mountainClimberAnimation = createAnimation(
+  "Mountain Climber",
+  860,
+  [
+    {
+      t: 0,
+      torso: { rotate: 54, translateX: -2, translateY: 34 },
+      upperArmL: { rotate: 82, translateX: 8, translateY: 31 },
+      upperArmR: { rotate: -82, translateX: -8, translateY: 31 },
+      thighL: { rotate: 28, translateX: -5, translateY: 18 },
+      shinL: { rotate: 22, translateX: -3, translateY: 20 },
+      thighR: { rotate: -24, translateX: 3, translateY: 8 },
+      shinR: { rotate: -10, translateX: 2, translateY: 7 },
+    },
+    {
+      t: 0.25,
+      torso: { rotate: 54, translateX: -2, translateY: 33 },
+      upperArmL: { rotate: 82, translateX: 8, translateY: 31 },
+      upperArmR: { rotate: -82, translateX: -8, translateY: 31 },
+      thighL: { rotate: 6, translateX: -3, translateY: 12 },
+      shinL: { rotate: 4, translateX: -2, translateY: 12 },
+      thighR: { rotate: 6, translateX: 3, translateY: 12 },
+      shinR: { rotate: 4, translateX: 2, translateY: 12 },
+    },
+    {
+      t: 0.5,
+      torso: { rotate: 54, translateX: -2, translateY: 34 },
+      upperArmL: { rotate: 82, translateX: 8, translateY: 31 },
+      upperArmR: { rotate: -82, translateX: -8, translateY: 31 },
+      thighL: { rotate: -24, translateX: -3, translateY: 8 },
+      shinL: { rotate: -10, translateX: -2, translateY: 7 },
+      thighR: { rotate: 28, translateX: 5, translateY: 18 },
+      shinR: { rotate: 22, translateX: 3, translateY: 20 },
+    },
+    {
+      t: 0.75,
+      torso: { rotate: 54, translateX: -2, translateY: 33 },
+      upperArmL: { rotate: 82, translateX: 8, translateY: 31 },
+      upperArmR: { rotate: -82, translateX: -8, translateY: 31 },
+      thighL: { rotate: 5, translateX: -3, translateY: 12 },
+      shinL: { rotate: 4, translateX: -2, translateY: 12 },
+      thighR: { rotate: 5, translateX: 3, translateY: 12 },
+      shinR: { rotate: 4, translateX: 2, translateY: 12 },
+    },
+    {
+      t: 1,
+      torso: { rotate: 54, translateX: -2, translateY: 34 },
+      upperArmL: { rotate: 82, translateX: 8, translateY: 31 },
+      upperArmR: { rotate: -82, translateX: -8, translateY: 31 },
+      thighL: { rotate: 28, translateX: -5, translateY: 18 },
+      shinL: { rotate: 22, translateX: -3, translateY: 20 },
+      thighR: { rotate: -24, translateX: 3, translateY: 8 },
+      shinR: { rotate: -10, translateX: 2, translateY: 7 },
+    },
+  ],
+  ["Shoulders over wrists", "Drive knee to chest", "Keep hips stable"],
+  {
+    phase: "concentric",
+    repPhases: {
+      concentric: { start: 0, end: 0.5, label: "Left drive" },
+      eccentric: { start: 0.5, end: 1, label: "Right drive" },
+    },
+    style: {
+      interpolation: "sine",
+      transitionMs: 180,
+      shadowPulse: 1.25,
+    },
+  },
+);

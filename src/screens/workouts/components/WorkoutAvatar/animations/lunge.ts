@@ -1,0 +1,75 @@
+import { createAnimation } from "./shared";
+
+export const lungeAnimation = createAnimation(
+  "Lunge",
+  2450,
+  [
+    {
+      t: 0,
+      torso: { rotate: 0, translateX: 0, translateY: 0 },
+      thighL: { rotate: -10, translateX: -2, translateY: 4 },
+      shinL: { rotate: 10, translateX: -2, translateY: 4 },
+      thighR: { rotate: 8, translateX: 2, translateY: 0 },
+      shinR: { rotate: -6, translateX: 2, translateY: 0 },
+    },
+    {
+      t: 0.24,
+      torso: { rotate: 4, translateX: 0, translateY: 12 },
+      thighL: { rotate: -46, translateX: -4, translateY: 10 },
+      shinL: { rotate: 42, translateX: -2, translateY: 14 },
+      thighR: { rotate: 14, translateX: 3, translateY: 8 },
+      shinR: { rotate: 8, translateX: 2, translateY: 8 },
+      upperArmL: { rotate: 7, translateX: 0, translateY: 4 },
+      upperArmR: { rotate: -7, translateX: 0, translateY: 4 },
+    },
+    {
+      t: 0.52,
+      torso: { rotate: 8, translateX: 0, translateY: 26 },
+      thighL: { rotate: -95, translateX: -6, translateY: 20 },
+      shinL: { rotate: 88, translateX: -3, translateY: 24 },
+      thighR: { rotate: 24, translateX: 4, translateY: 14 },
+      shinR: { rotate: 18, translateX: 3, translateY: 15 },
+      upperArmL: { rotate: 10, translateX: 0, translateY: 10 },
+      upperArmR: { rotate: -10, translateX: 0, translateY: 10 },
+    },
+    {
+      t: 0.64,
+      torso: { rotate: 9, translateX: 0, translateY: 28 },
+      thighL: { rotate: -100, translateX: -6, translateY: 21 },
+      shinL: { rotate: 92, translateX: -3, translateY: 24 },
+      thighR: { rotate: 24, translateX: 4, translateY: 14 },
+      shinR: { rotate: 18, translateX: 3, translateY: 15 },
+      upperArmL: { rotate: 10, translateX: 0, translateY: 10 },
+      upperArmR: { rotate: -10, translateX: 0, translateY: 10 },
+    },
+    {
+      t: 0.86,
+      torso: { rotate: 2, translateX: 0, translateY: 6 },
+      thighL: { rotate: -20, translateX: -3, translateY: 6 },
+      shinL: { rotate: 18, translateX: -2, translateY: 8 },
+      thighR: { rotate: 10, translateX: 2, translateY: 2 },
+      shinR: { rotate: 2, translateX: 2, translateY: 2 },
+    },
+    {
+      t: 1,
+      torso: { rotate: 0, translateX: 0, translateY: 0 },
+      thighL: { rotate: -10, translateX: -2, translateY: 4 },
+      shinL: { rotate: 10, translateX: -2, translateY: 4 },
+      thighR: { rotate: 8, translateX: 2, translateY: 0 },
+      shinR: { rotate: -6, translateX: 2, translateY: 0 },
+    },
+  ],
+  ["Front knee over mid-foot", "Drop straight down", "Push back through front heel"],
+  {
+    phase: "concentric",
+    repPhases: {
+      eccentric: { start: 0, end: 0.64, label: "Descend split stance" },
+      concentric: { start: 0.64, end: 1, label: "Drive to standing" },
+    },
+    style: {
+      interpolation: "smoothstep",
+      transitionMs: 240,
+      shadowPulse: 1.2,
+    },
+  },
+);
