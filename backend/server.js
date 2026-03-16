@@ -12,10 +12,10 @@ app.use(cors());
 app.use(express.json({ limit: "2mb" }));
 
 function requireSupabaseConfig(res) {
-  if (!SUPABASE_URL || !SUPABASE_ANON_KEY || !SUPABASE_SERVICE_ROLE_KEY) {
+  if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
     res.status(500).json({
       error:
-        "Backend is missing SUPABASE_URL, SUPABASE_ANON_KEY, or SUPABASE_SERVICE_ROLE_KEY environment variables.",
+        "Backend is missing SUPABASE_URL or SUPABASE_ANON_KEY environment variables.",
     });
     return false;
   }
@@ -33,7 +33,8 @@ app.get("/health", (_req, res) => {
 app.get("/config", (_req, res) => {
   res.json({
     ok: true,
-    hasSupabaseConfig: Boolean(SUPABASE_URL && SUPABASE_ANON_KEY && SUPABASE_SERVICE_ROLE_KEY),
+    hasSupabaseConfig: Boolean(SUPABASE_URL && SUPABASE_ANON_KEY),
+    hasServiceRoleKey: Boolean(SUPABASE_SERVICE_ROLE_KEY),
   });
 });
 
@@ -50,7 +51,14 @@ app.post("/api/functions/:name", async (req, res) => {
 
   const authHeader = req.headers.authorization;
   const hasBearer = typeof authHeader === "string" && authHeader.toLowerCase().startsWith("bearer ");
-  const authorization = hasBearer ? authHeader : `Bearer ${SUPABASE_SERVICE_ROLE_KEY}`;
+  const authorization = hasBearer ? authHeader : (SUPABASE_SERVICE_ROLE_KEY ? `Bearer ${SUPABASE_SERVICE_ROLE_KEY}` : null);
+  if (!authorization) {
+    res.status(401).json({
+      error:
+        "Missing Authorization bearer token and SUPABASE_SERVICE_ROLE_KEY is not configured on backend.",
+    });
+    return;
+  }
 
   try {
     const response = await fetch(`${SUPABASE_URL}/functions/v1/${functionName}`, {

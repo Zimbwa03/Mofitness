@@ -79,8 +79,8 @@ export const useAuthStore = create<AuthState>((set, get) => ({
       return;
     }
 
-    const profile = await supabaseService.fetchProfile(session.user.id).catch(() => null);
-    const preferences = await supabaseService.fetchPreferences(session.user.id).catch(() => null);
+    const profile = await Promise.resolve(supabaseService.fetchProfile(session.user.id)).catch(() => null);
+    const preferences = await Promise.resolve(supabaseService.fetchPreferences(session.user.id)).catch(() => null);
 
     // Keep onboarding status tied to profile only; preferences/network issues
     // must not force users back into onboarding.
