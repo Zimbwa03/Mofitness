@@ -121,7 +121,7 @@ function readProxyBody(req) {
   return JSON.stringify(req.body);
 }
 
-app.all("/api/supabase/*", async (req, res) => {
+app.use("/api/supabase", async (req, res) => {
   if (!requireSupabaseConfig(res)) {
     return;
   }
