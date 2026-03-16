@@ -11,6 +11,7 @@ import type { AchievementBadge, Preferences, RewardCatalogItem, UserBadge, UserP
 
 const SUPABASE_REQUEST_TIMEOUT_MS = 12000;
 const CONNECTIVITY_CHECK_TTL_MS = 30000;
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "");
 const FALLBACK_SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const FALLBACK_SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
 const resolvedSupabaseUrl = SUPABASE_URL ?? FALLBACK_SUPABASE_URL;
@@ -232,14 +233,19 @@ class SupabaseService {
     }
 
     try {
-      const response = await this.fetchWithTimeout(`${resolvedSupabaseUrl}/functions/v1/${name}`, {
+      const endpoint = API_BASE_URL ? `${API_BASE_URL}/api/functions/${name}` : `${resolvedSupabaseUrl}/functions/v1/${name}`;
+      const headers: Record<string, string> = {
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+        Accept: "application/json",
+      };
+      if (!API_BASE_URL) {
+        headers.apikey = resolvedSupabaseAnonKey!;
+      }
+
+      const response = await this.fetchWithTimeout(endpoint, {
         method: "POST",
-        headers: {
-          apikey: resolvedSupabaseAnonKey!,
-          Authorization: `Bearer ${session.access_token}`,
-          "Content-Type": "application/json",
-          Accept: "application/json",
-        },
+        headers,
         body: body === undefined ? undefined : JSON.stringify(body),
       });
 
