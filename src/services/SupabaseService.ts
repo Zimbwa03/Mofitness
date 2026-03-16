@@ -8,16 +8,19 @@ import {
 
 import { SUPABASE_ANON_KEY, SUPABASE_URL } from "@env";
 import type { AchievementBadge, Preferences, RewardCatalogItem, UserBadge, UserProfile } from "../models";
+import { API_BASE_URL } from "../config/backend";
 
 const SUPABASE_REQUEST_TIMEOUT_MS = 12000;
 const CONNECTIVITY_CHECK_TTL_MS = 30000;
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_URL?.replace(/\/$/, "");
 const FALLBACK_SUPABASE_URL = process.env.EXPO_PUBLIC_SUPABASE_URL;
 const FALLBACK_SUPABASE_ANON_KEY = process.env.EXPO_PUBLIC_SUPABASE_ANON_KEY;
-const resolvedSupabaseUrl = SUPABASE_URL ?? FALLBACK_SUPABASE_URL;
-const resolvedSupabaseAnonKey = SUPABASE_ANON_KEY ?? FALLBACK_SUPABASE_ANON_KEY;
 const MISSING_SUPABASE_CONFIG_MESSAGE =
-  "Missing Supabase config. Provide SUPABASE_URL and SUPABASE_ANON_KEY via .env or set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY in EAS environment variables.";
+  "Missing Supabase config. Provide SUPABASE_URL and SUPABASE_ANON_KEY via .env, set EXPO_PUBLIC_SUPABASE_URL and EXPO_PUBLIC_SUPABASE_ANON_KEY in EAS variables, or expose them through API /config/mobile.";
+
+type SupabaseRuntimeConfig = {
+  supabaseUrl: string;
+  supabaseAnonKey: string;
+};
 
 const storageAdapter = {
   getItem: async (key: string) => SecureStore.getItemAsync(key),
@@ -30,20 +33,39 @@ class SupabaseService {
   private client: SupabaseClient;
   private lastConnectivityCheckAt = 0;
   private missingConfigError: Error | null = null;
+  private config: SupabaseRuntimeConfig | null = null;
+  private initializePromise: Promise<void> | null = null;
 
   constructor() {
-    const hasConfig = Boolean(resolvedSupabaseUrl && resolvedSupabaseAnonKey);
-    if (!hasConfig) {
+    const localConfig = this.readLocalConfig();
+    this.config = localConfig;
+
+    // Only raise missing-config eagerly when no backend URL is configured.
+    if (!localConfig && !API_BASE_URL) {
       this.missingConfigError = new Error(MISSING_SUPABASE_CONFIG_MESSAGE);
       console.error(this.missingConfigError.message);
     }
 
     // Keep app startup alive even when env vars are missing.
-    // Network calls will fail with a clear error via ensureConfigured().
-    this.client = createClient(
-      resolvedSupabaseUrl ?? "https://invalid.supabase.local",
-      resolvedSupabaseAnonKey ?? "missing-supabase-anon-key",
-      {
+    // Network calls fail with a clear error via ensureConfigured().
+    this.client = this.createClient(
+      localConfig?.supabaseUrl ?? "https://invalid.supabase.local",
+      localConfig?.supabaseAnonKey ?? "missing-supabase-anon-key",
+    );
+  }
+
+  private readLocalConfig(): SupabaseRuntimeConfig | null {
+    const supabaseUrl = SUPABASE_URL ?? FALLBACK_SUPABASE_URL;
+    const supabaseAnonKey = SUPABASE_ANON_KEY ?? FALLBACK_SUPABASE_ANON_KEY;
+    if (!supabaseUrl || !supabaseAnonKey) {
+      return null;
+    }
+
+    return { supabaseUrl, supabaseAnonKey };
+  }
+
+  private createClient(supabaseUrl: string, supabaseAnonKey: string) {
+    return createClient(supabaseUrl, supabaseAnonKey, {
       auth: {
         storage: storageAdapter,
         autoRefreshToken: true,
@@ -54,6 +76,58 @@ class SupabaseService {
         fetch: this.fetchWithTimeout,
       },
     });
+  }
+
+  private async fetchRemoteConfig() {
+    if (!API_BASE_URL) {
+      return null;
+    }
+
+    const response = await this.fetchWithTimeout(`${API_BASE_URL}/config/mobile`, {
+      headers: {
+        Accept: "application/json",
+      },
+    });
+    if (!response.ok) {
+      throw new Error(`Backend config request failed (HTTP ${response.status}).`);
+    }
+
+    const payload = (await response.json()) as Partial<SupabaseRuntimeConfig>;
+    if (!payload.supabaseUrl || !payload.supabaseAnonKey) {
+      throw new Error("Backend /config/mobile response is missing Supabase fields.");
+    }
+
+    return {
+      supabaseUrl: payload.supabaseUrl,
+      supabaseAnonKey: payload.supabaseAnonKey,
+    } satisfies SupabaseRuntimeConfig;
+  }
+
+  async initialize() {
+    if (this.config) {
+      return;
+    }
+
+    if (!this.initializePromise) {
+      this.initializePromise = (async () => {
+        try {
+          const remoteConfig = await this.fetchRemoteConfig();
+          if (!remoteConfig) {
+            return;
+          }
+
+          this.config = remoteConfig;
+          this.client = this.createClient(remoteConfig.supabaseUrl, remoteConfig.supabaseAnonKey);
+          this.missingConfigError = null;
+        } catch (error) {
+          const mapped = this.mapNetworkError(error);
+          this.missingConfigError =
+            mapped instanceof Error ? mapped : new Error(MISSING_SUPABASE_CONFIG_MESSAGE);
+        }
+      })();
+    }
+
+    await this.initializePromise;
   }
 
   private ensureConfigured() {
@@ -100,14 +174,15 @@ class SupabaseService {
   }
 
   private async ensureConnectivity() {
+    this.ensureConfigured();
     if (Date.now() - this.lastConnectivityCheckAt < CONNECTIVITY_CHECK_TTL_MS) {
       return;
     }
 
     try {
-      const response = await this.fetchWithTimeout(`${resolvedSupabaseUrl}/auth/v1/settings`, {
+      const response = await this.fetchWithTimeout(`${this.config!.supabaseUrl}/auth/v1/settings`, {
         headers: {
-          apikey: resolvedSupabaseAnonKey!,
+          apikey: this.config!.supabaseAnonKey,
         },
       });
 
@@ -126,6 +201,7 @@ class SupabaseService {
   }
 
   async signIn(email: string, password: string) {
+    await this.initialize();
     this.ensureConfigured();
     await this.ensureConnectivity();
     try {
@@ -136,6 +212,7 @@ class SupabaseService {
   }
 
   async signUp(email: string, password: string, fullName: string) {
+    await this.initialize();
     this.ensureConfigured();
     await this.ensureConnectivity();
     try {
@@ -154,6 +231,7 @@ class SupabaseService {
   }
 
   async signInWithProvider(provider: "google" | "apple") {
+    await this.initialize();
     this.ensureConfigured();
     const { data, error } = await this.client.auth.signInWithOAuth({
       provider,
@@ -175,6 +253,7 @@ class SupabaseService {
   }
 
   async handleAuthCallback(url: string) {
+    await this.initialize();
     this.ensureConfigured();
     const parsedUrl = new URL(url);
     const code = parsedUrl.searchParams.get("code");
@@ -193,6 +272,7 @@ class SupabaseService {
   }
 
   async signOut() {
+    await this.initialize();
     this.ensureConfigured();
     try {
       return await this.client.auth.signOut();
@@ -202,6 +282,7 @@ class SupabaseService {
   }
 
   async requestPasswordReset(email: string) {
+    await this.initialize();
     this.ensureConfigured();
     await this.ensureConnectivity();
     try {
@@ -214,10 +295,13 @@ class SupabaseService {
   }
 
   async getSession() {
+    await this.initialize();
+    this.ensureConfigured();
     return this.client.auth.getSession();
   }
 
   async invokeFunction<TResponse>(name: string, body?: unknown) {
+    await this.initialize();
     this.ensureConfigured();
     const {
       data: { session },
@@ -233,15 +317,12 @@ class SupabaseService {
     }
 
     try {
-      const endpoint = API_BASE_URL ? `${API_BASE_URL}/api/functions/${name}` : `${resolvedSupabaseUrl}/functions/v1/${name}`;
+      const endpoint = `${API_BASE_URL}/api/functions/${name}`;
       const headers: Record<string, string> = {
         Authorization: `Bearer ${session.access_token}`,
         "Content-Type": "application/json",
         Accept: "application/json",
       };
-      if (!API_BASE_URL) {
-        headers.apikey = resolvedSupabaseAnonKey!;
-      }
 
       const response = await this.fetchWithTimeout(endpoint, {
         method: "POST",
@@ -281,6 +362,7 @@ class SupabaseService {
   }
 
   async fetchProfile(userId: string) {
+    await this.initialize();
     this.ensureConfigured();
     const { data, error } = await this.client
       .from("users")
@@ -296,6 +378,7 @@ class SupabaseService {
   }
 
   async fetchPreferences(userId: string) {
+    await this.initialize();
     this.ensureConfigured();
     const { data, error } = await this.client
       .from("preferences")
@@ -311,6 +394,7 @@ class SupabaseService {
   }
 
   async upsertProfile(profile: UserProfile) {
+    await this.initialize();
     this.ensureConfigured();
     const payload = profile;
 
@@ -328,6 +412,7 @@ class SupabaseService {
   }
 
   async upsertPreferences(userId: string, preferences: Preferences) {
+    await this.initialize();
     this.ensureConfigured();
     const payload: Preferences = {
       ...preferences,
@@ -348,6 +433,7 @@ class SupabaseService {
   }
 
   async updatePushToken(userId: string, pushToken: string | null) {
+    await this.initialize();
     this.ensureConfigured();
     const { data, error } = await this.client
       .from("users")
@@ -364,6 +450,7 @@ class SupabaseService {
   }
 
   async updateNotificationSettings(userId: string, notificationsEnabled: boolean) {
+    await this.initialize();
     this.ensureConfigured();
     const { data, error } = await this.client
       .from("users")
@@ -380,6 +467,7 @@ class SupabaseService {
   }
 
   async fetchRewardCatalog() {
+    await this.initialize();
     this.ensureConfigured();
     const { data, error } = await this.client
       .from("reward_catalog")
@@ -395,6 +483,7 @@ class SupabaseService {
   }
 
   async fetchAchievementBadges() {
+    await this.initialize();
     this.ensureConfigured();
     const { data, error } = await this.client
       .from("achievement_badges")
@@ -409,6 +498,7 @@ class SupabaseService {
   }
 
   async fetchUserBadges(userId: string) {
+    await this.initialize();
     this.ensureConfigured();
     const { data, error } = await this.client
       .from("user_badges")

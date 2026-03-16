@@ -1,0 +1,9 @@
+env: load .env
+env: export SUPABASE_ANON_KEY SUPABASE_URL
+Networking has been disabled
+Starting project at C:\Users\GWENJE\Downloads\Mofitness
+Starting Metro Bundler
+
+Skipping dependency validation in offline mode
+Waiting on http://localhost:8088
+Logs for your project will appear below.

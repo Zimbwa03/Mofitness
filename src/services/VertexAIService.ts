@@ -1,8 +1,8 @@
 import type { AIUsageLogInput, VertexStructuredResponse } from "../models";
+import { API_BASE_URL } from "../config/backend";
 import supabaseService from "./SupabaseService";
 
 type Schema = Record<string, unknown>;
-const API_BASE_URL = (process.env.EXPO_PUBLIC_API_URL || "").replace(/\/$/, "");
 
 class VertexAIService {
   private readonly model = "gemini-2.5-pro";

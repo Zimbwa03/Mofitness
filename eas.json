@@ -13,7 +13,8 @@
       "distribution": "internal",
       "channel": "preview",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://mofitness-backend.onrender.com"
+        "EXPO_PUBLIC_API_URL": "https://mofitness-backend.onrender.com",
+        "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyAXbdv4hwmO8K5rJV3Ny99AGQge7BPrQVs"
       },
       "android": {
         "buildType": "apk"
@@ -23,7 +24,8 @@
       "autoIncrement": true,
       "channel": "production",
       "env": {
-        "EXPO_PUBLIC_API_URL": "https://mofitness-backend.onrender.com"
+        "EXPO_PUBLIC_API_URL": "https://mofitness-backend.onrender.com",
+        "EXPO_PUBLIC_GOOGLE_MAPS_API_KEY": "AIzaSyAXbdv4hwmO8K5rJV3Ny99AGQge7BPrQVs"
       },
       "android": {
         "buildType": "app-bundle"

@@ -1,5 +1,6 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
+import { Linking, Platform } from "react-native";
 
 import { useCoachStore } from "../stores/coachStore";
 import supabaseService from "./SupabaseService";
@@ -17,6 +18,7 @@ type NotificationsModule = typeof import("expo-notifications");
 
 class NotificationService {
   private notificationsPromise: Promise<NotificationsModule | null> | null = null;
+  private listenersInitialized = false;
 
   private async getNotificationsModule() {
     if (isExpoGo) {
@@ -73,6 +75,15 @@ class NotificationService {
       return null;
     }
 
+    if (Platform.OS === "android") {
+      await notifications.setNotificationChannelAsync("default", {
+        name: "default",
+        importance: notifications.AndroidImportance.MAX,
+        vibrationPattern: [0, 250, 250, 250],
+        lightColor: "#C8F135",
+      });
+    }
+
     const existingPermissions = await notifications.getPermissionsAsync();
     let finalStatus = existingPermissions.status;
 
@@ -86,7 +97,12 @@ class NotificationService {
     }
 
     try {
-      const tokenResponse = await notifications.getExpoPushTokenAsync();
+      const projectId =
+        Constants.expoConfig?.extra?.eas?.projectId ??
+        Constants.easConfig?.projectId;
+      const tokenResponse = await notifications.getExpoPushTokenAsync(
+        projectId ? { projectId } : undefined,
+      );
       const pushToken = tokenResponse.data;
       await supabaseService.updatePushToken(userId, pushToken);
       return pushToken;
@@ -207,6 +223,22 @@ class NotificationService {
 
     await this.syncDefaultReminders(true);
     return profile;
+  }
+
+  async initializeRuntimeListeners() {
+    const notifications = await this.getNotificationsModule();
+    if (!notifications || this.listenersInitialized) {
+      return;
+    }
+
+    notifications.addNotificationResponseReceivedListener((response) => {
+      const deepLink = response.notification.request.content.data?.deepLink;
+      if (typeof deepLink === "string" && deepLink.length > 0) {
+        Linking.openURL(deepLink).catch(() => undefined);
+      }
+    });
+
+    this.listenersInitialized = true;
   }
 }
 

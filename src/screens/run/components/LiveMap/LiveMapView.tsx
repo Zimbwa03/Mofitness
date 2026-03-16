@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Pressable, StyleSheet, View } from "react-native";
-import MapView, { type Region } from "react-native-maps";
+import MapView, { PROVIDER_GOOGLE, type Region } from "react-native-maps";
 import MaterialCommunityIcons from "react-native-vector-icons/MaterialCommunityIcons";
 
 import type { RoutePoint, SavedRoute } from "../../../../models";
@@ -92,6 +92,7 @@ export function LiveMapView({
       <MapView
         ref={mapRef}
         style={StyleSheet.absoluteFill}
+        provider={PROVIDER_GOOGLE}
         initialRegion={defaultRegion}
         mapType={mapType}
         loadingEnabled

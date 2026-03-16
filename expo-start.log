@@ -1,0 +1,32 @@
+  --non-interactive is not supported, use $CI=1 instead
+env: load .env
+env: export SUPABASE_ANON_KEY SUPABASE_URL
+Networking has been disabled
+Starting project at C:\Users\GWENJE\Downloads\Mofitness
+Starting Metro Bundler
+
+Skipping dependency validation in offline mode
+Waiting on http://localhost:8087
+Logs for your project will appear below.
+› Detected a change in babel.config.js. Restart the server to see the new results. You may need to clear the bundler cache with the --clear flag for your changes to take effect.
+C:\Users\GWENJE\Downloads\Mofitness\node_modules\expo\node_modules\@expo\cli\build\src\utils\errors.js:130
+    throw error;
+    ^
+
+Error: ENOENT: no such file or directory, watch 'C:\Users\GWENJE\Downloads\Mofitness\node_modules\@shopify\react-native-skia\lib\commonjs\renderer\components\text'
+    at FSWatcher.<computed> (node:internal/fs/watchers:247:19)
+    at Object.watch (node:fs:2491:36)
+    at FallbackWatcher._watchdir (C:\Users\GWENJE\Downloads\Mofitness\node_modules\metro-file-map\src\watchers\FallbackWatcher.js:119:33)
+    at C:\Users\GWENJE\Downloads\Mofitness\node_modules\metro-file-map\src\watchers\FallbackWatcher.js:219:22
+    at Walker.<anonymous> (C:\Users\GWENJE\Downloads\Mofitness\node_modules\metro-file-map\src\watchers\FallbackWatcher.js:358:5)
+    at Walker.emit (node:events:524:28)
+    at C:\Users\GWENJE\Downloads\Mofitness\node_modules\walker\lib\walker.js:69:16
+    at FSReqCallback.oncomplete (node:fs:188:23) {
+  errno: -4058,
+  syscall: 'watch',
+  code: 'ENOENT',
+  path: 'C:\\Users\\GWENJE\\Downloads\\Mofitness\\node_modules\\@shopify\\react-native-skia\\lib\\commonjs\\renderer\\components\\text',
+  filename: 'C:\\Users\\GWENJE\\Downloads\\Mofitness\\node_modules\\@shopify\\react-native-skia\\lib\\commonjs\\renderer\\components\\text'
+}
+
+Node.js v20.19.3

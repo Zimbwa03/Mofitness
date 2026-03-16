@@ -21,6 +21,9 @@
     },
     "ios": {
       "supportsTablet": true,
+      "config": {
+        "googleMapsApiKey": "AIzaSyAXbdv4hwmO8K5rJV3Ny99AGQge7BPrQVs"
+      },
       "infoPlist": {
         "NSCameraUsageDescription": "To analyse your exercise form in real time without recording video",
         "NSLocationWhenInUseUsageDescription": "To track your run route in real time",
@@ -63,7 +66,12 @@
         "android.permission.FOREGROUND_SERVICE",
         "android.permission.FOREGROUND_SERVICE_LOCATION"
       ],
-      "package": "com.nerdx15.mofitness"
+      "package": "com.nerdx15.mofitness",
+      "config": {
+        "googleMaps": {
+          "apiKey": "AIzaSyAXbdv4hwmO8K5rJV3Ny99AGQge7BPrQVs"
+        }
+      }
     },
     "web": {
       "favicon": "./assets/app-icon.png"

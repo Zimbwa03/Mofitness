@@ -1,0 +1,10 @@
+env: load .env
+env: export GOOGLE_APPLICATION_CREDENTIALS SUPABASE_ANON_KEY SUPABASE_URL VERTEX_AI_LOCATION VERTEX_AI_PROJECT_ID
+Networking has been disabled
+Starting project at C:\Users\GWENJE\Downloads\Mofitness
+Starting Metro Bundler
+
+Skipping dependency validation in offline mode
+Waiting on http://localhost:8090
+Logs for your project will appear below.
+› Detected a change in babel.config.js. Restart the server to see the new results. You may need to clear the bundler cache with the --clear flag for your changes to take effect.

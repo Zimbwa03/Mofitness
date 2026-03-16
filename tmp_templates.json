@@ -1,0 +1,736 @@
+[
+  {
+    "id": "wk_lower_body_power",
+    "name": "Lower Body Power",
+    "description": "Athletic lower-body strength session built for power output, controlled depth, and posterior-chain force.",
+    "category": "strength",
+    "format": "sets_reps",
+    "difficulty": "intermediate",
+    "durationMinutes": 45,
+    "caloriesEstimate": 450,
+    "muscleGroups": [
+      "quads",
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": [
+      "barbell",
+      "rack",
+      "bench"
+    ],
+    "exercises": [
+      {
+        "exerciseName": "Barbell Back Squat",
+        "sets": 4,
+        "reps": "8-10",
+        "restSeconds": 90,
+        "order": 1,
+        "cue": "Chest tall, knees track over toes",
+        "suggestedLoad": "60-80% 1RM"
+      },
+      {
+        "exerciseName": "Romanian Deadlift",
+        "sets": 4,
+        "reps": "8",
+        "restSeconds": 90,
+        "order": 2,
+        "cue": "Hinge at the hips, keep spine neutral",
+        "suggestedLoad": "55-75% 1RM"
+      },
+      {
+        "exerciseName": "Forward Lunge",
+        "sets": 3,
+        "reps": "10/leg",
+        "restSeconds": 60,
+        "order": 3,
+        "cue": "Step long and stay balanced"
+      },
+      {
+        "exerciseName": "Barbell Hip Thrust",
+        "sets": 3,
+        "reps": "10",
+        "restSeconds": 60,
+        "order": 4,
+        "cue": "Drive through heels, full lockout"
+      },
+      {
+        "exerciseName": "Standing Calf Raise",
+        "sets": 3,
+        "reps": "15",
+        "restSeconds": 45,
+        "order": 5,
+        "cue": "Pause one second at the top"
+      },
+      {
+        "exerciseName": "Plank",
+        "sets": 3,
+        "reps": "45s",
+        "restSeconds": 30,
+        "order": 6,
+        "cue": "Brace the core, hips level"
+      }
+    ],
+    "rating": 4.8,
+    "timesCompleted": 842,
+    "createdAt": "2026-03-15T00:00:00.000Z",
+    "isFeatured": true
+  },
+  {
+    "id": "wk_upper_push_volume",
+    "name": "Upper Push Volume",
+    "description": "Chest, shoulders, and triceps hypertrophy with progressive pressing volume and controlled tempo.",
+    "category": "strength",
+    "format": "sets_reps",
+    "difficulty": "intermediate",
+    "durationMinutes": 42,
+    "caloriesEstimate": 390,
+    "muscleGroups": [
+      "chest",
+      "shoulders",
+      "arms"
+    ],
+    "equipment": [
+      "barbell",
+      "bench",
+      "dumbbells"
+    ],
+    "exercises": [
+      {
+        "exerciseName": "Barbell Bench Press",
+        "sets": 4,
+        "reps": "8",
+        "restSeconds": 90,
+        "order": 1,
+        "cue": "Control descent, explode up"
+      },
+      {
+        "exerciseName": "Dumbbell Shoulder Press",
+        "sets": 3,
+        "reps": "10",
+        "restSeconds": 75,
+        "order": 2,
+        "cue": "Stack ribs down under the bar"
+      },
+      {
+        "exerciseName": "Push-up",
+        "sets": 3,
+        "reps": "AMRAP",
+        "restSeconds": 60,
+        "order": 3,
+        "cue": "Keep body rigid as one line"
+      },
+      {
+        "exerciseName": "Lateral Raise",
+        "sets": 3,
+        "reps": "12",
+        "restSeconds": 45,
+        "order": 4,
+        "cue": "Lift with elbows, not wrists"
+      },
+      {
+        "exerciseName": "Tricep Dip",
+        "sets": 3,
+        "reps": "12",
+        "restSeconds": 45,
+        "order": 5,
+        "cue": "Shoulders down, elbows tucked"
+      }
+    ],
+    "rating": 4.7,
+    "timesCompleted": 623,
+    "createdAt": "2026-03-15T00:00:00.000Z"
+  },
+  {
+    "id": "wk_pull_strength",
+    "name": "Back And Pull Strength",
+    "description": "Posterior-chain and upper-back pulling session to improve strength and posture under load.",
+    "category": "strength",
+    "format": "sets_reps",
+    "difficulty": "intermediate",
+    "durationMinutes": 44,
+    "caloriesEstimate": 410,
+    "muscleGroups": [
+      "back",
+      "arms",
+      "core"
+    ],
+    "equipment": [
+      "barbell",
+      "rack",
+      "pullup_bar"
+    ],
+    "exercises": [
+      {
+        "exerciseName": "Conventional Deadlift",
+        "sets": 4,
+        "reps": "5",
+        "restSeconds": 120,
+        "order": 1,
+        "cue": "Push floor away, keep lats tight",
+        "suggestedLoad": "70-85% 1RM"
+      },
+      {
+        "exerciseName": "Pull-up",
+        "sets": 4,
+        "reps": "6-8",
+        "restSeconds": 90,
+        "order": 2,
+        "cue": "Pull elbows to pockets"
+      },
+      {
+        "exerciseName": "Inverted Row",
+        "sets": 3,
+        "reps": "10",
+        "restSeconds": 60,
+        "order": 3,
+        "cue": "Pause at the top"
+      },
+      {
+        "exerciseName": "Barbell Bicep Curl",
+        "sets": 3,
+        "reps": "12",
+        "restSeconds": 45,
+        "order": 4,
+        "cue": "Keep elbows fixed"
+      },
+      {
+        "exerciseName": "Face Pull",
+        "sets": 3,
+        "reps": "15",
+        "restSeconds": 45,
+        "order": 5,
+        "cue": "Lead with elbows, squeeze rear delts"
+      }
+    ],
+    "rating": 4.6,
+    "timesCompleted": 401,
+    "createdAt": "2026-03-15T00:00:00.000Z"
+  },
+  {
+    "id": "wk_core_control_20",
+    "name": "Core Control 20",
+    "description": "20-minute core stability circuit targeting anti-extension, rotation, and lower-ab strength.",
+    "category": "core",
+    "format": "circuit",
+    "difficulty": "beginner",
+    "durationMinutes": 20,
+    "caloriesEstimate": 190,
+    "muscleGroups": [
+      "core",
+      "full_body"
+    ],
+    "equipment": [],
+    "exercises": [
+      {
+        "exerciseName": "Plank",
+        "sets": 3,
+        "reps": "45s",
+        "restSeconds": 20,
+        "order": 1,
+        "cue": "Press forearms down and brace"
+      },
+      {
+        "exerciseName": "Side Plank",
+        "sets": 3,
+        "reps": "30s/side",
+        "restSeconds": 20,
+        "order": 2,
+        "cue": "Keep hips stacked"
+      },
+      {
+        "exerciseName": "Russian Twist",
+        "sets": 3,
+        "reps": "20",
+        "restSeconds": 20,
+        "order": 3,
+        "cue": "Rotate from ribcage"
+      },
+      {
+        "exerciseName": "Lying Leg Raise",
+        "sets": 3,
+        "reps": "12",
+        "restSeconds": 30,
+        "order": 4,
+        "cue": "Lower slowly with control"
+      },
+      {
+        "exerciseName": "Dead Bug",
+        "sets": 3,
+        "reps": "10/side",
+        "restSeconds": 20,
+        "order": 5,
+        "cue": "Keep low back glued to floor"
+      }
+    ],
+    "rating": 4.5,
+    "timesCompleted": 1248,
+    "createdAt": "2026-03-15T00:00:00.000Z",
+    "isFeatured": true
+  },
+  {
+    "id": "wk_hiit_blast_15",
+    "name": "HIIT Blast 15",
+    "description": "High-intensity intervals for conditioning and calorie burn in under 15 minutes.",
+    "category": "hiit",
+    "format": "tabata",
+    "difficulty": "intermediate",
+    "durationMinutes": 15,
+    "caloriesEstimate": 230,
+    "muscleGroups": [
+      "full_body",
+      "core",
+      "calves"
+    ],
+    "equipment": [],
+    "exercises": [
+      {
+        "exerciseName": "Burpee",
+        "sets": 8,
+        "reps": "20s",
+        "restSeconds": 10,
+        "order": 1,
+        "cue": "Land soft and stay explosive"
+      },
+      {
+        "exerciseName": "Mountain Climber",
+        "sets": 8,
+        "reps": "20s",
+        "restSeconds": 10,
+        "order": 2,
+        "cue": "Drive knees fast, shoulders over wrists"
+      },
+      {
+        "exerciseName": "High Knees",
+        "sets": 8,
+        "reps": "20s",
+        "restSeconds": 10,
+        "order": 3,
+        "cue": "Tall posture, quick contacts"
+      },
+      {
+        "exerciseName": "Jumping Jack",
+        "sets": 8,
+        "reps": "20s",
+        "restSeconds": 10,
+        "order": 4,
+        "cue": "Snap arms and feet in sync"
+      }
+    ],
+    "rating": 4.7,
+    "timesCompleted": 1602,
+    "createdAt": "2026-03-15T00:00:00.000Z",
+    "isFeatured": true
+  },
+  {
+    "id": "wk_no_equipment_quick_12",
+    "name": "No Equipment Quick 12",
+    "description": "Fast bodyweight finisher for busy days with no gear and minimal setup.",
+    "category": "strength",
+    "format": "circuit",
+    "difficulty": "beginner",
+    "durationMinutes": 12,
+    "caloriesEstimate": 145,
+    "muscleGroups": [
+      "full_body",
+      "core",
+      "quads"
+    ],
+    "equipment": [],
+    "exercises": [
+      {
+        "exerciseName": "Air Squat",
+        "sets": 3,
+        "reps": "15",
+        "restSeconds": 20,
+        "order": 1
+      },
+      {
+        "exerciseName": "Push-up",
+        "sets": 3,
+        "reps": "10",
+        "restSeconds": 20,
+        "order": 2
+      },
+      {
+        "exerciseName": "Forward Lunge",
+        "sets": 3,
+        "reps": "10/leg",
+        "restSeconds": 20,
+        "order": 3
+      },
+      {
+        "exerciseName": "Plank",
+        "sets": 3,
+        "reps": "30s",
+        "restSeconds": 20,
+        "order": 4
+      },
+      {
+        "exerciseName": "Jumping Jack",
+        "sets": 3,
+        "reps": "30s",
+        "restSeconds": 20,
+        "order": 5
+      }
+    ],
+    "rating": 4.4,
+    "timesCompleted": 2201,
+    "createdAt": "2026-03-15T00:00:00.000Z"
+  },
+  {
+    "id": "wk_recovery_reset",
+    "name": "Recovery Reset",
+    "description": "Low-impact mobility and tissue reset to reduce stiffness and promote recovery.",
+    "category": "recovery",
+    "format": "timed",
+    "difficulty": "beginner",
+    "durationMinutes": 22,
+    "caloriesEstimate": 90,
+    "muscleGroups": [
+      "glutes",
+      "hamstrings",
+      "core"
+    ],
+    "equipment": [
+      "foam_roller"
+    ],
+    "exercises": [
+      {
+        "exerciseName": "Hip Flexor Stretch",
+        "sets": 2,
+        "reps": "45s/side",
+        "restSeconds": 20,
+        "order": 1
+      },
+      {
+        "exerciseName": "Hamstring Stretch",
+        "sets": 2,
+        "reps": "45s",
+        "restSeconds": 20,
+        "order": 2
+      },
+      {
+        "exerciseName": "Pigeon Pose",
+        "sets": 2,
+        "reps": "45s/side",
+        "restSeconds": 20,
+        "order": 3
+      },
+      {
+        "exerciseName": "Child's Pose",
+        "sets": 2,
+        "reps": "60s",
+        "restSeconds": 20,
+        "order": 4
+      },
+      {
+        "exerciseName": "Foam Roll Quads",
+        "sets": 2,
+        "reps": "60s",
+        "restSeconds": 20,
+        "order": 5
+      },
+      {
+        "exerciseName": "Foam Roll IT Band",
+        "sets": 2,
+        "reps": "45s/side",
+        "restSeconds": 20,
+        "order": 6
+      }
+    ],
+    "rating": 4.9,
+    "timesCompleted": 918,
+    "createdAt": "2026-03-15T00:00:00.000Z"
+  },
+  {
+    "id": "wk_afrobeats_cardio_rush",
+    "name": "Cardio Rush",
+    "description": "Steady cardio block with rising pace to keep heart rate in the training zone.",
+    "category": "cardio",
+    "format": "for_time",
+    "difficulty": "beginner",
+    "durationMinutes": 30,
+    "caloriesEstimate": 320,
+    "muscleGroups": [
+      "full_body",
+      "calves",
+      "quads"
+    ],
+    "equipment": [
+      "treadmill"
+    ],
+    "exercises": [
+      {
+        "exerciseName": "Sprint (Treadmill)",
+        "sets": 5,
+        "reps": "90s",
+        "restSeconds": 60,
+        "order": 1
+      },
+      {
+        "exerciseName": "High Knees",
+        "sets": 4,
+        "reps": "45s",
+        "restSeconds": 30,
+        "order": 2
+      },
+      {
+        "exerciseName": "Jump Rope",
+        "sets": 4,
+        "reps": "60s",
+        "restSeconds": 30,
+        "order": 3
+      }
+    ],
+    "rating": 4.3,
+    "timesCompleted": 557,
+    "createdAt": "2026-03-15T00:00:00.000Z"
+  },
+  {
+    "id": "wk_sport_explosive",
+    "name": "Sport Explosive Power",
+    "description": "Plyometric sport prep for acceleration, lateral force, and reactive jump quality.",
+    "category": "sport",
+    "format": "circuit",
+    "difficulty": "intermediate",
+    "durationMinutes": 35,
+    "caloriesEstimate": 360,
+    "muscleGroups": [
+      "quads",
+      "glutes",
+      "calves",
+      "core"
+    ],
+    "equipment": [
+      "plyo_box",
+      "medicine_ball"
+    ],
+    "exercises": [
+      {
+        "exerciseName": "Box Step-up",
+        "sets": 3,
+        "reps": "10/leg",
+        "restSeconds": 45,
+        "order": 1
+      },
+      {
+        "exerciseName": "Broad Jump",
+        "sets": 4,
+        "reps": "6",
+        "restSeconds": 60,
+        "order": 2
+      },
+      {
+        "exerciseName": "Lateral Bound",
+        "sets": 4,
+        "reps": "8/side",
+        "restSeconds": 45,
+        "order": 3
+      },
+      {
+        "exerciseName": "Medicine Ball Slam",
+        "sets": 4,
+        "reps": "10",
+        "restSeconds": 45,
+        "order": 4
+      },
+      {
+        "exerciseName": "Jump Squat",
+        "sets": 3,
+        "reps": "10",
+        "restSeconds": 45,
+        "order": 5
+      }
+    ],
+    "rating": 4.8,
+    "timesCompleted": 384,
+    "createdAt": "2026-03-15T00:00:00.000Z"
+  },
+  {
+    "id": "wk_beginner_foundation",
+    "name": "Beginner Foundation",
+    "description": "Entry-level full-body strength workout focused on pattern quality and confidence.",
+    "category": "strength",
+    "format": "sets_reps",
+    "difficulty": "beginner",
+    "durationMinutes": 32,
+    "caloriesEstimate": 260,
+    "muscleGroups": [
+      "full_body",
+      "core",
+      "glutes"
+    ],
+    "equipment": [
+      "dumbbells"
+    ],
+    "exercises": [
+      {
+        "exerciseName": "Goblet Squat",
+        "sets": 3,
+        "reps": "10",
+        "restSeconds": 60,
+        "order": 1
+      },
+      {
+        "exerciseName": "Dumbbell Bench Press",
+        "sets": 3,
+        "reps": "10",
+        "restSeconds": 60,
+        "order": 2
+      },
+      {
+        "exerciseName": "Dumbbell Shoulder Press",
+        "sets": 3,
+        "reps": "10",
+        "restSeconds": 60,
+        "order": 3
+      },
+      {
+        "exerciseName": "Reverse Lunge",
+        "sets": 3,
+        "reps": "8/leg",
+        "restSeconds": 45,
+        "order": 4
+      },
+      {
+        "exerciseName": "Dumbbell Bicep Curl",
+        "sets": 2,
+        "reps": "12",
+        "restSeconds": 45,
+        "order": 5
+      },
+      {
+        "exerciseName": "Plank",
+        "sets": 2,
+        "reps": "30s",
+        "restSeconds": 30,
+        "order": 6
+      }
+    ],
+    "rating": 4.9,
+    "timesCompleted": 1467,
+    "createdAt": "2026-03-15T00:00:00.000Z",
+    "isFeatured": true
+  },
+  {
+    "id": "wk_beast_mode_strength",
+    "name": "Beast Mode Strength",
+    "description": "Advanced heavy lifting split with lower volume but high intensity for strength peaks.",
+    "category": "strength",
+    "format": "sets_reps",
+    "difficulty": "advanced",
+    "durationMinutes": 55,
+    "caloriesEstimate": 520,
+    "muscleGroups": [
+      "full_body",
+      "back",
+      "quads"
+    ],
+    "equipment": [
+      "barbell",
+      "rack",
+      "bench",
+      "pullup_bar"
+    ],
+    "exercises": [
+      {
+        "exerciseName": "Barbell Back Squat",
+        "sets": 5,
+        "reps": "5",
+        "restSeconds": 120,
+        "order": 1,
+        "suggestedLoad": "75-88% 1RM"
+      },
+      {
+        "exerciseName": "Conventional Deadlift",
+        "sets": 4,
+        "reps": "4",
+        "restSeconds": 150,
+        "order": 2,
+        "suggestedLoad": "80-90% 1RM"
+      },
+      {
+        "exerciseName": "Barbell Bench Press",
+        "sets": 5,
+        "reps": "5",
+        "restSeconds": 120,
+        "order": 3,
+        "suggestedLoad": "75-85% 1RM"
+      },
+      {
+        "exerciseName": "Pull-up",
+        "sets": 4,
+        "reps": "AMRAP",
+        "restSeconds": 90,
+        "order": 4
+      },
+      {
+        "exerciseName": "Barbell Hip Thrust",
+        "sets": 3,
+        "reps": "8",
+        "restSeconds": 90,
+        "order": 5
+      }
+    ],
+    "rating": 4.6,
+    "timesCompleted": 288,
+    "createdAt": "2026-03-15T00:00:00.000Z"
+  },
+  {
+    "id": "wk_flexibility_flow",
+    "name": "Flexibility Flow",
+    "description": "Mobility and stretch flow to improve hip opening, thoracic movement, and downregulation.",
+    "category": "flexibility",
+    "format": "timed",
+    "difficulty": "beginner",
+    "durationMinutes": 18,
+    "caloriesEstimate": 70,
+    "muscleGroups": [
+      "hamstrings",
+      "glutes",
+      "core"
+    ],
+    "equipment": [],
+    "exercises": [
+      {
+        "exerciseName": "Hip Flexor Stretch",
+        "sets": 2,
+        "reps": "40s/side",
+        "restSeconds": 15,
+        "order": 1
+      },
+      {
+        "exerciseName": "Hamstring Stretch",
+        "sets": 2,
+        "reps": "40s",
+        "restSeconds": 15,
+        "order": 2
+      },
+      {
+        "exerciseName": "Pigeon Pose",
+        "sets": 2,
+        "reps": "40s/side",
+        "restSeconds": 15,
+        "order": 3
+      },
+      {
+        "exerciseName": "Child's Pose",
+        "sets": 2,
+        "reps": "60s",
+        "restSeconds": 15,
+        "order": 4
+      },
+      {
+        "exerciseName": "Side Plank",
+        "sets": 2,
+        "reps": "30s/side",
+        "restSeconds": 15,
+        "order": 5
+      }
+    ],
+    "rating": 4.5,
+    "timesCompleted": 733,
+    "createdAt": "2026-03-15T00:00:00.000Z"
+  }
+]

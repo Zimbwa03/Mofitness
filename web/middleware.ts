@@ -5,11 +5,7 @@ import type { Database } from "./src/lib/supabase/database";
 import { getPublicEnv } from "./src/lib/env";
 
 export async function middleware(request: NextRequest) {
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
+  const response = NextResponse.next();
 
   const env = getPublicEnv();
   const supabase = createServerClient<Database>(env.supabaseUrl, env.supabaseAnonKey, {
@@ -18,21 +14,9 @@ export async function middleware(request: NextRequest) {
         return request.cookies.get(name)?.value;
       },
       set(name: string, value: string, options: CookieOptions) {
-        request.cookies.set({ name, value, ...options });
-        response = NextResponse.next({
-          request: {
-            headers: request.headers,
-          },
-        });
         response.cookies.set({ name, value, ...options });
       },
       remove(name: string, options: CookieOptions) {
-        request.cookies.set({ name, value: "", ...options });
-        response = NextResponse.next({
-          request: {
-            headers: request.headers,
-          },
-        });
         response.cookies.set({ name, value: "", ...options, maxAge: 0 });
       },
     },

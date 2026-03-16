@@ -62,13 +62,32 @@ export default function App() {
   }, []);
 
   useEffect(() => {
-    hydrateSession().catch(() => undefined);
+    let isMounted = true;
+    let unsubscribe = () => undefined;
 
-    const subscription = supabaseService.onAuthStateChange((_event, session) => {
-      syncSession(session).catch(() => undefined);
-    });
+    const bootstrapAuth = async () => {
+      await supabaseService.initialize().catch(() => undefined);
+      if (!isMounted) {
+        return;
+      }
 
-    return () => subscription.unsubscribe();
+      await hydrateSession().catch(() => undefined);
+      if (!isMounted) {
+        return;
+      }
+
+      const subscription = supabaseService.onAuthStateChange((_event, session) => {
+        syncSession(session).catch(() => undefined);
+      });
+      unsubscribe = () => subscription.unsubscribe();
+    };
+
+    bootstrapAuth().catch(() => undefined);
+
+    return () => {
+      isMounted = false;
+      unsubscribe();
+    };
   }, [hydrateSession, syncSession]);
 
   useEffect(() => {
@@ -139,6 +158,7 @@ export default function App() {
     }
 
     const syncNotifications = async () => {
+      await notificationService.initializeRuntimeListeners();
       const pushToken = await notificationService.registerForPushNotifications(user.id);
       if (pushToken) {
         setProfile({ push_token: pushToken, notifications_enabled: true });

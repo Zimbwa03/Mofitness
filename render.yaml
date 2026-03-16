@@ -1,0 +1,56 @@
+services:
+  - type: web
+    name: mofitness-backend
+    runtime: node
+    rootDir: backend
+    buildCommand: npm ci
+    startCommand: npm start
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: SUPABASE_URL
+        sync: false
+      - key: SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: VERTEX_AI_PROJECT_ID
+        sync: false
+      - key: VERTEX_AI_LOCATION
+        value: us-central1
+      - key: VERTEX_GEMINI_MODEL
+        value: gemini-2.5-pro
+      - key: VERTEX_EMBEDDING_MODEL
+        value: text-embedding-005
+      - key: GOOGLE_SERVICE_ACCOUNT_JSON
+        sync: false
+      - key: WEB_APP_URL
+        sync: false
+
+  - type: web
+    name: mofitness-web
+    runtime: node
+    rootDir: web
+    buildCommand: npm ci && npm run build
+    startCommand: npm start
+    plan: free
+    autoDeploy: true
+    envVars:
+      - key: NEXT_PUBLIC_SUPABASE_URL
+        sync: false
+      - key: NEXT_PUBLIC_SUPABASE_ANON_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_ROLE_KEY
+        sync: false
+      - key: NEXT_PUBLIC_GOOGLE_MAPS_API_KEY
+        sync: false
+      - key: NEXT_PUBLIC_SITE_URL
+        sync: false
+      - key: RESEND_API_KEY
+        sync: false
+      - key: RESEND_FROM_EMAIL
+        sync: false
+      - key: STRIPE_SECRET_KEY
+        sync: false
+      - key: STRIPE_WEBHOOK_SECRET
+        sync: false

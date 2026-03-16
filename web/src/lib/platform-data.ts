@@ -66,9 +66,23 @@ const ADMIN_VISIBLE_COACH_STATUSES: Array<Exclude<CoachRecord["status"], "draft"
   "suspended",
   "more_info_required",
 ];
+const PLATFORM_QUERY_TIMEOUT_MS = 8000;
 
 function canReadPlatformData() {
   return hasSupabaseAdminEnv();
+}
+
+async function withPlatformTimeout<T>(query: PromiseLike<T>, fallback: T): Promise<T> {
+  try {
+    return (await Promise.race([
+      query,
+      new Promise<T>((resolve) => {
+        setTimeout(() => resolve(fallback), PLATFORM_QUERY_TIMEOUT_MS);
+      }),
+    ])) as T;
+  } catch {
+    return fallback;
+  }
 }
 
 export async function getApprovedCoaches(filters?: CoachFilters) {
@@ -77,15 +91,18 @@ export async function getApprovedCoaches(filters?: CoachFilters) {
   }
 
   const admin = getSupabaseAdminClient();
-  const { data, error } = await admin
-    .from("coaches")
-    .select("*")
-    .eq("status", "approved")
-    .order("is_featured", { ascending: false });
-
-  if (error) {
-    throw error;
-  }
+  const { data, error } = await withPlatformTimeout(
+    admin
+      .from("coaches")
+      .select("*")
+      .eq("status", "approved")
+      .order("is_featured", { ascending: false }),
+    { data: [], error: null } as unknown as {
+      data: unknown[] | null;
+      error: unknown | null;
+    },
+  );
+  if (error) return [];
 
   const coaches = (data ?? []) as unknown as CoachRecord[];
   if (!filters) {
@@ -192,15 +209,18 @@ export async function getPublishedEvents() {
   }
 
   const admin = getSupabaseAdminClient();
-  const { data, error } = await admin
-    .from("fitness_events")
-    .select("*")
-    .eq("status", "published")
-    .order("starts_at", { ascending: true });
-
-  if (error) {
-    throw error;
-  }
+  const { data, error } = await withPlatformTimeout(
+    admin
+      .from("fitness_events")
+      .select("*")
+      .eq("status", "published")
+      .order("starts_at", { ascending: true }),
+    { data: [], error: null } as unknown as {
+      data: unknown[] | null;
+      error: unknown | null;
+    },
+  );
+  if (error) return [];
 
   return (data ?? []) as unknown as FitnessEventRecord[];
 }
