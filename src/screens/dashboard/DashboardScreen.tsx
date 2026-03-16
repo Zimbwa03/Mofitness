@@ -18,7 +18,9 @@ import { useWorkouts } from "../../hooks/useWorkouts";
 import nutritionAIService from "../../services/ai/NutritionAIService";
 import recommendationEngine from "../../services/ai/RecommendationEngine";
 import trainingPlanService from "../../services/ai/TrainingPlanService";
+import challengesService from "../../services/ChallengesService";
 import nutritionService from "../../services/NutritionService";
+import supabaseService from "../../services/SupabaseService";
 import { useNutritionStore } from "../../stores/nutritionStore";
 import { colors, layout, theme, typography } from "../../theme";
 import { getTabScreenBottomPadding } from "../../utils/screen";
@@ -39,9 +41,55 @@ export function DashboardScreen({ navigation }: Props) {
   const setActiveGoal = useNutritionStore((state) => state.setActiveGoal);
   const [loading, setLoading] = useState(false);
   const [lastRun, setLastRun] = useState<RunSession | null>(null);
+  const [todayHydrationLiters, setTodayHydrationLiters] = useState(0);
+  const [latestSleepHours, setLatestSleepHours] = useState<number | null>(null);
+  const [weeklyWorkoutCount, setWeeklyWorkoutCount] = useState(0);
+  const [currentStreak, setCurrentStreak] = useState(0);
+  const [weeklyCalories, setWeeklyCalories] = useState(0);
+  const [weeklyDistanceKm, setWeeklyDistanceKm] = useState(0);
+  const [nextRewardPoints, setNextRewardPoints] = useState<number | null>(null);
 
-  const nextWorkout = workouts[0];
+  const todayISO = new Date().toISOString().slice(0, 10);
+  const nextWorkout =
+    workouts.find((item) => !item.completed && item.scheduled_date >= todayISO) ??
+    workouts.find((item) => !item.completed) ??
+    workouts[0];
   const todaysMealPlan = mealPlans[0];
+  const dayLabel = new Date().toLocaleDateString(undefined, { weekday: "long" });
+
+  const goToTab = (tab: "Workouts" | "Nutrition" | "Wellness") => {
+    const parent = navigation.getParent();
+    if (!parent) {
+      return;
+    }
+    (parent as never as { navigate: (name: string) => void }).navigate(tab);
+  };
+
+  const countStreakDays = (activityDates: string[]) => {
+    if (activityDates.length === 0) {
+      return 0;
+    }
+
+    const unique = Array.from(new Set(activityDates.filter(Boolean))).sort((a, b) => b.localeCompare(a));
+    if (unique.length === 0) {
+      return 0;
+    }
+
+    let streak = 1;
+    let cursor = new Date(`${unique[0]}T00:00:00`);
+    for (let i = 1; i < unique.length; i += 1) {
+      const prev = new Date(cursor);
+      prev.setDate(prev.getDate() - 1);
+      const prevISO = prev.toISOString().slice(0, 10);
+      if (unique[i] !== prevISO) {
+        break;
+      }
+      streak += 1;
+      cursor = prev;
+    }
+
+    return streak;
+  };
 
   useEffect(() => {
     if (!user || recommendations.length > 0) {
@@ -67,11 +115,125 @@ export function DashboardScreen({ navigation }: Props) {
     if (!user) {
       return;
     }
-    runService
-      .getRecentRuns(user.id, 1)
-      .then((items) => setLastRun(items[0] ?? null))
-      .catch(() => undefined);
-  }, [user]);
+    const client = supabaseService.getClient();
+
+    const loadDashboardData = async () => {
+      try {
+        const sevenDaysAgo = new Date();
+        sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 6);
+        const weekStartISO = sevenDaysAgo.toISOString().slice(0, 10);
+
+        const [
+          runItems,
+          runSummary,
+          waterLogs,
+          plannedRowsResult,
+          mealLogsResult,
+          wellnessResult,
+          rewards,
+        ] = await Promise.all([
+          runService.getRecentRuns(user.id, 1),
+          runService.getWeeklySummary(user.id, `${weekStartISO}T00:00:00.000Z`),
+          nutritionService.getWaterLogs(user.id, todayISO),
+          client
+            .from("user_workouts")
+            .select("id, workout_id, scheduled_date, completed_date, calories_burned, workouts(name, category, duration_minutes)")
+            .eq("user_id", user.id)
+            .order("scheduled_date", { ascending: true })
+            .limit(40),
+          client
+            .from("meal_logs")
+            .select("log_date, total_calories")
+            .eq("user_id", user.id)
+            .gte("log_date", weekStartISO),
+          client
+            .from("wellness_logs")
+            .select("date, sleep_hours")
+            .eq("user_id", user.id)
+            .order("date", { ascending: false })
+            .limit(14),
+          challengesService.getRewards(),
+        ]);
+
+        setLastRun(runItems[0] ?? null);
+        setTodayHydrationLiters(waterLogs.reduce((sum, row) => sum + row.amount_ml, 0) / 1000);
+        setWeeklyCalories(Math.round(runSummary.calories));
+        setWeeklyDistanceKm(runSummary.distanceMeters / 1000);
+
+        if (wellnessResult.error) {
+          throw wellnessResult.error;
+        }
+        const recentWellness = (wellnessResult.data ?? []) as Array<{ date: string; sleep_hours: number | null }>;
+        setLatestSleepHours(recentWellness[0]?.sleep_hours ?? null);
+
+        if (plannedRowsResult.error) {
+          throw plannedRowsResult.error;
+        }
+
+        const plannedRows = (plannedRowsResult.data ?? []) as Array<{
+          id: string;
+          workout_id: string;
+          scheduled_date: string | null;
+          completed_date: string | null;
+          calories_burned: number | null;
+          workouts:
+            | {
+                name: string | null;
+                category: string | null;
+                duration_minutes: number | null;
+              }
+            | Array<{
+                name: string | null;
+                category: string | null;
+                duration_minutes: number | null;
+              }>
+            | null;
+        }>;
+
+        const mappedPlan = plannedRows.map((row) => {
+          const workoutMeta = Array.isArray(row.workouts) ? row.workouts[0] : row.workouts;
+          return {
+            id: row.id,
+            title: workoutMeta?.name ?? "Planned session",
+            category: workoutMeta?.category ?? "scheduled",
+            scheduled_date: row.scheduled_date ?? todayISO,
+            duration_minutes: workoutMeta?.duration_minutes ?? 45,
+            completed: Boolean(row.completed_date),
+          };
+        });
+        setWorkouts(mappedPlan);
+
+        const thisWeekWorkoutCount = plannedRows.filter((row) => {
+          if (!row.completed_date) {
+            return false;
+          }
+          return row.completed_date >= weekStartISO && row.completed_date <= todayISO;
+        }).length;
+        setWeeklyWorkoutCount(thisWeekWorkoutCount);
+
+        if (mealLogsResult.error) {
+          throw mealLogsResult.error;
+        }
+        const mealLogs = (mealLogsResult.data ?? []) as Array<{ log_date: string; total_calories: number | null }>;
+        const nutritionCalories = mealLogs.reduce((sum, row) => sum + Number(row.total_calories ?? 0), 0);
+        setWeeklyCalories((current) => current + Math.round(nutritionCalories));
+
+        const runDates = runItems.map((row) => row.started_at.slice(0, 10));
+        const workoutDates = plannedRows.map((row) => row.completed_date).filter((value): value is string => Boolean(value));
+        const nutritionDates = mealLogs.map((row) => row.log_date);
+        setCurrentStreak(countStreakDays([...runDates, ...workoutDates, ...nutritionDates]));
+
+        const points = profile?.points ?? 0;
+        const sortedRewards = [...rewards].sort((a, b) => a.points_cost - b.points_cost);
+        const nextReward = sortedRewards.find((item) => item.points_cost > points) ?? sortedRewards[sortedRewards.length - 1] ?? null;
+        setNextRewardPoints(nextReward?.points_cost ?? null);
+      } catch (error) {
+        console.error("Failed to load dashboard metrics", error);
+      }
+    };
+
+    void loadDashboardData();
+  }, [profile?.points, setWorkouts, todayISO, user]);
 
   const macroSummary = useMemo(() => {
     const meals = todaysMealPlan?.meals ?? [];
@@ -135,33 +297,52 @@ export function DashboardScreen({ navigation }: Props) {
         <LinearGradient colors={colors.grad_hero} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
           <Text style={styles.heroEyebrow}>Good morning,</Text>
           <Text style={styles.heroTitle}>{profile?.full_name?.split(" ")[0] ?? "Athlete"}.</Text>
-          <Text style={styles.heroMeta}>Wednesday | Leg Day</Text>
+          <Text style={styles.heroMeta}>{`${dayLabel} | ${nextWorkout?.category ?? "Recovery day"}`}</Text>
           <View style={styles.microStats}>
-            <MoBadge>2,340 KCAL</MoBadge>
-            <MoBadge variant="blue">1.2L WATER</MoBadge>
-            <MoBadge variant="amber">7H SLEEP</MoBadge>
+            <MoBadge>{`${weeklyCalories.toLocaleString()} KCAL`}</MoBadge>
+            <MoBadge variant="blue">{`${todayHydrationLiters.toFixed(1)}L WATER`}</MoBadge>
+            <MoBadge variant="amber">{`${latestSleepHours?.toFixed(1) ?? "--"}H SLEEP`}</MoBadge>
           </View>
         </LinearGradient>
       </View>
       <CoachFullPanel
         feature="Dashboard"
-        message="You slept 7.2 hours. Your body is ready and today's plan is optimized for strong output."
+        message={
+          latestSleepHours && latestSleepHours < 6
+            ? "Sleep was below target. I have softened intensity and prioritized recovery blocks."
+            : "Your latest recovery markers look good. Today's plan is aligned for quality output."
+        }
         pose="chat"
       />
 
       <MoCard delay={100} variant="highlight">
         <Text style={styles.sectionLabel}>Today's workout</Text>
-        <Text style={styles.cardTitle}>{nextWorkout?.title ?? "Lower Body Power"}</Text>
+        <Text style={styles.cardTitle}>{nextWorkout?.title ?? "No workout scheduled yet"}</Text>
         <Text style={styles.supporting}>
-          {nextWorkout ? `${nextWorkout.duration_minutes} min | scheduled ${nextWorkout.scheduled_date}` : "45 min | 6 exercises"}
+          {nextWorkout ? `${nextWorkout.duration_minutes} min | scheduled ${nextWorkout.scheduled_date}` : "Generate your plan to schedule today's training."}
         </Text>
         <MoProgressBar style={styles.progress} value={nextWorkout ? 0.8 : 0} />
         <MoButton loading={loading} onPress={handleGenerateToday} size="medium">
-          {nextWorkout ? "Start Workout" : "Generate Plan"}
+          {nextWorkout ? "Refresh Plan" : "Generate Plan"}
         </MoButton>
       </MoCard>
 
-      <MoCard delay={120}>
+      <MoCard delay={120} variant="glass">
+        <Text style={styles.sectionLabel}>Quick Access</Text>
+        <View style={styles.quickActionRow}>
+          <MoButton onPress={() => goToTab("Workouts")} style={styles.quickActionBtn}>
+            Workouts
+          </MoButton>
+          <MoButton variant="secondary" onPress={() => goToTab("Nutrition")} style={styles.quickActionBtn}>
+            Nutrition
+          </MoButton>
+          <MoButton variant="ghost" onPress={() => goToTab("Wellness")} style={styles.quickActionBtn}>
+            Wellness
+          </MoButton>
+        </View>
+      </MoCard>
+
+      <MoCard delay={122}>
         <Text style={styles.sectionLabel}>Run & Track</Text>
         <View style={styles.quickActionRow}>
           <MoButton onPress={() => navigation.navigate("RunDashboard")} style={styles.quickActionBtn}>
@@ -174,7 +355,7 @@ export function DashboardScreen({ navigation }: Props) {
       </MoCard>
 
       <MoCard delay={125} variant="glass">
-        <Text style={styles.sectionLabel}>Live Courch</Text>
+        <Text style={styles.sectionLabel}>Live Coach</Text>
         <Text style={styles.cardTitle}>AI Form Checker</Text>
         <Text style={styles.supporting}>Camera-based live rep coaching with form scoring, cues, and session history.</Text>
         <View style={styles.quickActionRow}>
@@ -206,10 +387,10 @@ export function DashboardScreen({ navigation }: Props) {
       <View>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.statsRow}>
           {[
-            { label: "Weekly Workouts", value: String(workouts.length || 4) },
-            { label: "Streak", value: "06" },
-            { label: "Points", value: "3240" },
-            { label: "Calories", value: "1840" },
+            { label: "Weekly Workouts", value: String(weeklyWorkoutCount) },
+            { label: "Streak", value: String(currentStreak) },
+            { label: "Points", value: String(profile?.points ?? 0) },
+            { label: "Distance (km)", value: weeklyDistanceKm.toFixed(1) },
           ].map((item) => (
             <MoCard key={item.label} style={styles.statCard}>
               <Text style={styles.statValue}>{item.value}</Text>
@@ -222,13 +403,7 @@ export function DashboardScreen({ navigation }: Props) {
       <View>
         <Text style={styles.sectionLabel}>For you</Text>
         <ScrollView horizontal showsHorizontalScrollIndicator={false} contentContainerStyle={styles.recommendationList}>
-          {(recommendations.length > 0
-            ? recommendations.slice(0, 4)
-            : [
-                { id: "fallback-1", title: "Hill Sprint Builder", subtitle: "20 min explosive cardio" },
-                { id: "fallback-2", title: "Core Stability Flow", subtitle: "Recovery and control" },
-              ]
-          ).map((item) => (
+          {(recommendations.length > 0 ? recommendations.slice(0, 4) : [{ id: "empty", title: "No recommendations yet", subtitle: "Generate your plan to unlock AI picks" }]).map((item) => (
             <LinearGradient
               colors={[colors.bg_elevated, colors.bg_surface]}
               key={item.id}
@@ -243,10 +418,12 @@ export function DashboardScreen({ navigation }: Props) {
 
       <MoCard delay={280} variant="amber">
         <Text style={styles.sectionLabel}>Challenges</Text>
-        <Text style={styles.cardTitle}>Most Calories This Week</Text>
-        <Text style={styles.rankText}>Your rank #3 of 24</Text>
-        <MoProgressBar style={styles.progress} value={0.52} />
-        <Text style={styles.supporting}>1,840 / 3,500 kcal</Text>
+        <Text style={styles.cardTitle}>Next reward unlock</Text>
+        <Text style={styles.rankText}>{nextRewardPoints ? `Target ${nextRewardPoints} pts` : "No reward target available"}</Text>
+        <MoProgressBar style={styles.progress} value={nextRewardPoints ? Math.min(1, (profile?.points ?? 0) / nextRewardPoints) : 0} />
+        <Text style={styles.supporting}>
+          {nextRewardPoints ? `${profile?.points ?? 0} / ${nextRewardPoints} pts` : `${profile?.points ?? 0} pts`}
+        </Text>
       </MoCard>
 
       <MoCard delay={340}>

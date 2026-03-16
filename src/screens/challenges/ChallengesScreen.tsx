@@ -11,6 +11,9 @@ import { MoButton } from "../../components/common/MoButton";
 import { MoCard } from "../../components/common/MoCard";
 import { MoProgressBar } from "../../components/common/MoProgressBar";
 import type { ChallengesStackParamList } from "../../navigation/types";
+import { useAuth } from "../../hooks/useAuth";
+import runService from "../../services/RunService";
+import supabaseService from "../../services/SupabaseService";
 import { useChallengeStore } from "../../stores/challengeStore";
 import { useCoachStore } from "../../stores/coachStore";
 import { colors, layout, theme, typography } from "../../theme";
@@ -20,18 +23,74 @@ type Props = NativeStackScreenProps<ChallengesStackParamList, "ChallengesHome">;
 
 export function ChallengesScreen({ navigation }: Props) {
   const insets = useSafeAreaInsets();
+  const { user } = useAuth();
   const challenges = useChallengeStore((state) => state.challenges);
   const setChallenges = useChallengeStore((state) => state.setChallenges);
   const selectedCoach = useCoachStore((state) => state.selectedCoach);
+  const topChallenge = challenges[0] ?? null;
+  const topTarget = topChallenge?.title.includes("Distance")
+    ? 20
+    : topChallenge?.title.includes("Nutrition")
+      ? 7
+      : 5;
+  const topProgress = topChallenge
+    ? Math.min(1, topChallenge.progress_metric / topTarget)
+    : 0;
 
   useEffect(() => {
-    if (challenges.length === 0) {
-      setChallenges([
-        { id: "challenge-1", title: "7-Day Consistency Sprint", progress_metric: 4, rank: 3 },
-        { id: "challenge-2", title: "Cardio Minutes Push", progress_metric: 120, rank: 5 },
-      ]);
+    if (!user) {
+      setChallenges([]);
+      return;
     }
-  }, [challenges.length, setChallenges]);
+
+    const client = supabaseService.getClient();
+    const loadChallenges = async () => {
+      try {
+        const weekStart = new Date();
+        weekStart.setDate(weekStart.getDate() - 6);
+        const weekStartISO = weekStart.toISOString().slice(0, 10);
+        const todayISO = new Date().toISOString().slice(0, 10);
+
+        const [runSummary, workoutRows, mealRows] = await Promise.all([
+          runService.getWeeklySummary(user.id, `${weekStartISO}T00:00:00.000Z`),
+          client
+            .from("user_workouts")
+            .select("completed_date")
+            .eq("user_id", user.id)
+            .not("completed_date", "is", null)
+            .gte("completed_date", weekStartISO),
+          client
+            .from("meal_logs")
+            .select("log_date")
+            .eq("user_id", user.id)
+            .gte("log_date", weekStartISO),
+        ]);
+
+        if (workoutRows.error) {
+          throw workoutRows.error;
+        }
+        if (mealRows.error) {
+          throw mealRows.error;
+        }
+
+        const workoutCount = (workoutRows.data ?? []).length;
+        const mealDates = Array.from(new Set((mealRows.data ?? []).map((row) => row.log_date).filter(Boolean)));
+        const nutritionDays = mealDates.length;
+        const runDistanceKm = runSummary.distanceMeters / 1000;
+
+        setChallenges([
+          { id: "challenge-workout", title: "Weekly Workout Consistency", progress_metric: workoutCount, rank: null },
+          { id: "challenge-run", title: "Weekly Distance (km)", progress_metric: Number(runDistanceKm.toFixed(1)), rank: null },
+          { id: "challenge-nutrition", title: "Nutrition Logging Days", progress_metric: nutritionDays, rank: null },
+          { id: "challenge-streak", title: "Daily Activity Streak", progress_metric: Math.max(0, Math.min(7, nutritionDays + Math.min(workoutCount, 7))), rank: null },
+        ]);
+      } catch (error) {
+        console.error("Failed to load challenges", error);
+      }
+    };
+
+    void loadChallenges();
+  }, [setChallenges, user]);
 
   return (
     <FlatList
@@ -42,11 +101,11 @@ export function ChallengesScreen({ navigation }: Props) {
       ListHeaderComponent={
         <>
           <LinearGradient colors={colors.grad_amber} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.hero}>
-            <Text style={styles.heroLabel}>Most calories | week challenge</Text>
-            <Text style={styles.heroRank}>#3</Text>
-            <Text style={styles.heroSub}>of 24 participants</Text>
-            <MoProgressBar style={styles.heroProgress} value={0.52} />
-            <Text style={styles.heroMetric}>1,840 / 3,500 kcal</Text>
+            <Text style={styles.heroLabel}>Top challenge this week</Text>
+            <Text style={styles.heroRank}>{topChallenge ? `${topChallenge.progress_metric}` : "--"}</Text>
+            <Text style={styles.heroSub}>{topChallenge?.title ?? "No active challenge data yet"}</Text>
+            <MoProgressBar style={styles.heroProgress} value={topProgress} />
+            <Text style={styles.heroMetric}>{topChallenge ? `${topChallenge.progress_metric} / ${topTarget}` : "Complete activities to start tracking challenge progress"}</Text>
             <MoButton onPress={() => navigation.navigate("Leaderboard")} size="medium" variant="secondary">
               View Full Leaderboard
             </MoButton>
@@ -65,9 +124,20 @@ export function ChallengesScreen({ navigation }: Props) {
                 style={styles.horizontalCard}
               >
                 <Text style={styles.horizontalTitle}>{challenge.title}</Text>
-                <Text style={styles.horizontalMeta}>Reward 100 pts</Text>
-                <MoProgressBar showLabel={false} style={styles.horizontalProgress} value={0.45 + index * 0.1} />
-                <MoBadge variant="gray">{challenge.rank ? `Rank ${challenge.rank}` : "Open"}</MoBadge>
+                <Text style={styles.horizontalMeta}>Live weekly progress</Text>
+                <MoProgressBar
+                  showLabel={false}
+                  style={styles.horizontalProgress}
+                  value={Math.min(
+                    challenge.title.includes("Distance")
+                      ? challenge.progress_metric / 20
+                      : challenge.title.includes("Nutrition")
+                        ? challenge.progress_metric / 7
+                        : challenge.progress_metric / 5,
+                    1,
+                  )}
+                />
+                <MoBadge variant="gray">{challenge.rank ? `Rank ${challenge.rank}` : "Tracked"}</MoBadge>
               </LinearGradient>
             ))}
           </ScrollView>
@@ -83,7 +153,7 @@ export function ChallengesScreen({ navigation }: Props) {
           <Text style={styles.challengeTitle}>{item.title}</Text>
           <Text style={styles.challengeMeta}>Metric progress {item.progress_metric}</Text>
           <View style={styles.challengeFooter}>
-            <MoBadge variant="amber">{item.rank ? `Rank ${item.rank}` : "Join"}</MoBadge>
+            <MoBadge variant="amber">{item.rank ? `Rank ${item.rank}` : "Active"}</MoBadge>
             <MoButton onPress={() => navigation.navigate("Leaderboard")} size="small" variant="ghost">
               View
             </MoButton>

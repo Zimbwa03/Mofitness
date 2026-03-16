@@ -24,8 +24,21 @@ export type MainTabParamList = {
   Dashboard: undefined;
   Workouts: undefined;
   Challenges: undefined;
+  Coaches: undefined;
   Nutrition: undefined;
   Wellness: undefined;
+};
+
+export type FindCoachStackParamList = {
+  FindCoachHome: undefined;
+  CoachProfile: { coachId: string };
+  CoachChat: { coachId: string; conversationId?: string };
+  Menu: undefined;
+  Profile: undefined;
+  Settings: undefined;
+  Wearables: undefined;
+  PrivacyPolicy: undefined;
+  Rewards: undefined;
 };
 
 export type DashboardStackParamList = {

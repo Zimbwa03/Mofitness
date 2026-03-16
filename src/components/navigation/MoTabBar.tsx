@@ -5,10 +5,11 @@ import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { TabIcon } from "../icons";
 import { colors, layout, radius, shadows, theme, typography } from "../../theme";
 
-const iconByRoute: Record<string, "home" | "workouts" | "challenges" | "nutrition" | "wellness"> = {
+const iconByRoute: Record<string, "home" | "workouts" | "challenges" | "nutrition" | "wellness" | "profile"> = {
   Dashboard: "home",
   Workouts: "workouts",
   Challenges: "challenges",
+  Coaches: "profile",
   Nutrition: "nutrition",
   Wellness: "wellness",
 };

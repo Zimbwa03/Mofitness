@@ -6,14 +6,17 @@ import { CoachMessageBubble } from "../../components/coach/CoachMessageBubble";
 import { MoBadge } from "../../components/common/MoBadge";
 import { MoCard } from "../../components/common/MoCard";
 import { MoProgressBar } from "../../components/common/MoProgressBar";
+import { useAuth } from "../../hooks/useAuth";
 import { useChallengeStore } from "../../stores/challengeStore";
 import { colors, layout, theme, typography } from "../../theme";
 import { getTabScreenBottomPadding } from "../../utils/screen";
 
 export function LeaderboardScreen() {
   const insets = useSafeAreaInsets();
+  const { profile } = useAuth();
   const challenges = useChallengeStore((state) => state.challenges);
   const podium = challenges.slice(0, 3);
+  const maxMetric = challenges.length > 0 ? Math.max(...challenges.map((item) => item.progress_metric), 1) : 1;
 
   return (
     <FlatList
@@ -43,8 +46,8 @@ export function LeaderboardScreen() {
           </View>
           <MoCard variant="highlight">
             <Text style={styles.youTitle}>You</Text>
-            <Text style={styles.youMeta}>Rank #3 | 1,840 points</Text>
-            <MoProgressBar style={styles.youProgress} value={0.68} />
+            <Text style={styles.youMeta}>Points {profile?.points ?? 0} | Challenge entries {challenges.length}</Text>
+            <MoProgressBar style={styles.youProgress} value={Math.min((profile?.points ?? 0) / 1000, 1)} />
           </MoCard>
         </>
       }
@@ -55,7 +58,7 @@ export function LeaderboardScreen() {
             <View style={styles.rowContent}>
               <Text style={styles.rowTitle}>{item.title}</Text>
               <Text style={styles.rowMeta}>{item.progress_metric} pts</Text>
-              <MoProgressBar showLabel={false} value={Math.min(item.progress_metric / 2000, 1)} />
+              <MoProgressBar showLabel={false} value={Math.min(item.progress_metric / maxMetric, 1)} />
             </View>
           </View>
         </MoCard>

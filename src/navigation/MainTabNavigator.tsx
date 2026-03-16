@@ -5,6 +5,7 @@ import { MoTabBar } from "../components/navigation/MoTabBar";
 import { theme } from "../theme";
 import { ChallengesStackNavigator } from "./stacks/ChallengesStackNavigator";
 import { DashboardStackNavigator } from "./stacks/DashboardStackNavigator";
+import { FindCoachStackNavigator } from "./stacks/FindCoachStackNavigator";
 import { NutritionStackNavigator } from "./stacks/NutritionStackNavigator";
 import { WellnessStackNavigator } from "./stacks/WellnessStackNavigator";
 import { WorkoutsStackNavigator } from "./stacks/WorkoutsStackNavigator";
@@ -57,6 +58,16 @@ export function MainTabNavigator() {
           ),
         }}
         component={ChallengesStackNavigator}
+      />
+      <Tab.Screen
+        name="Coaches"
+        options={{
+          headerShown: false,
+          tabBarIcon: ({ color, size }) => (
+            <MaterialCommunityIcons name="account-group-outline" color={color} size={size} />
+          ),
+        }}
+        component={FindCoachStackNavigator}
       />
       <Tab.Screen
         name="Nutrition"
