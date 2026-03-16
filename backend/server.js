@@ -8,6 +8,7 @@ const PORT = Number(process.env.PORT || 10000);
 const SUPABASE_URL = process.env.SUPABASE_URL;
 const SUPABASE_ANON_KEY = process.env.SUPABASE_ANON_KEY;
 const SUPABASE_SERVICE_ROLE_KEY = process.env.SUPABASE_SERVICE_ROLE_KEY;
+const WEB_APP_URL = process.env.WEB_APP_URL;
 const VERTEX_AI_PROJECT_ID = process.env.VERTEX_AI_PROJECT_ID;
 const VERTEX_AI_LOCATION = process.env.VERTEX_AI_LOCATION || "us-central1";
 const VERTEX_GEMINI_MODEL = process.env.VERTEX_GEMINI_MODEL || "gemini-2.5-pro";
@@ -109,12 +110,38 @@ app.get("/health", (_req, res) => {
   });
 });
 
+app.get("/", (_req, res) => {
+  if (WEB_APP_URL) {
+    res.redirect(302, WEB_APP_URL);
+    return;
+  }
+
+  res.status(200).json({
+    ok: true,
+    service: "mofitness-backend",
+    message: "API is running. Set WEB_APP_URL to redirect root traffic to the web app.",
+    endpoints: ["/health", "/config", "/api/functions/:name", "/api/ai/generate", "/api/ai/embedding"],
+  });
+});
+
 app.get("/config", (_req, res) => {
   res.json({
     ok: true,
     hasSupabaseConfig: Boolean(SUPABASE_URL && SUPABASE_ANON_KEY),
     hasServiceRoleKey: Boolean(SUPABASE_SERVICE_ROLE_KEY),
     hasVertexConfig: Boolean(VERTEX_AI_PROJECT_ID && GOOGLE_SERVICE_ACCOUNT_JSON),
+  });
+});
+
+app.get("/config/mobile", (_req, res) => {
+  if (!requireSupabaseConfig(res)) {
+    return;
+  }
+
+  res.json({
+    ok: true,
+    supabaseUrl: SUPABASE_URL,
+    supabaseAnonKey: SUPABASE_ANON_KEY,
   });
 });
 
