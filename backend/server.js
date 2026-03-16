@@ -102,6 +102,27 @@ function requireVertexConfig(res) {
   return true;
 }
 
+async function supabaseAuthRequest(path, { method = "GET", body, accessToken } = {}) {
+  const headers = {
+    apikey: SUPABASE_ANON_KEY,
+    "Content-Type": "application/json",
+    Accept: "application/json",
+  };
+  if (accessToken) {
+    headers.Authorization = `Bearer ${accessToken}`;
+  }
+
+  const response = await fetch(`${SUPABASE_URL}/auth/v1/${path}`, {
+    method,
+    headers,
+    body: body === undefined ? undefined : JSON.stringify(body),
+  });
+  const contentType = response.headers.get("content-type") ?? "";
+  const isJson = contentType.includes("application/json");
+  const payload = isJson ? await response.json() : await response.text();
+  return { response, payload };
+}
+
 app.get("/health", (_req, res) => {
   res.json({
     ok: true,
@@ -143,6 +164,168 @@ app.get("/config/mobile", (_req, res) => {
     supabaseUrl: SUPABASE_URL,
     supabaseAnonKey: SUPABASE_ANON_KEY,
   });
+});
+
+app.post("/api/auth/sign-in", async (req, res) => {
+  if (!requireSupabaseConfig(res)) {
+    return;
+  }
+
+  const email = typeof req.body?.email === "string" ? req.body.email : "";
+  const password = typeof req.body?.password === "string" ? req.body.password : "";
+  if (!email.trim() || !password) {
+    res.status(400).json({ error: "Email and password are required." });
+    return;
+  }
+
+  try {
+    const { response, payload } = await supabaseAuthRequest("token?grant_type=password", {
+      method: "POST",
+      body: { email, password },
+    });
+    if (!response.ok) {
+      const message =
+        typeof payload === "object" && payload && payload.msg
+          ? payload.msg
+          : "Unable to sign in.";
+      res.status(response.status).json({ error: message, details: payload });
+      return;
+    }
+
+    res.json({
+      data: payload,
+      config: {
+        supabaseUrl: SUPABASE_URL,
+        supabaseAnonKey: SUPABASE_ANON_KEY,
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown backend error";
+    res.status(500).json({ error: message });
+  }
+});
+
+app.post("/api/auth/sign-up", async (req, res) => {
+  if (!requireSupabaseConfig(res)) {
+    return;
+  }
+
+  const email = typeof req.body?.email === "string" ? req.body.email : "";
+  const password = typeof req.body?.password === "string" ? req.body.password : "";
+  const fullName = typeof req.body?.fullName === "string" ? req.body.fullName : "";
+  if (!email.trim() || !password) {
+    res.status(400).json({ error: "Email and password are required." });
+    return;
+  }
+
+  try {
+    const { response, payload } = await supabaseAuthRequest("signup", {
+      method: "POST",
+      body: {
+        email,
+        password,
+        data: {
+          full_name: fullName,
+        },
+      },
+    });
+
+    if (!response.ok) {
+      const message =
+        typeof payload === "object" && payload && payload.msg
+          ? payload.msg
+          : "Unable to sign up.";
+      res.status(response.status).json({ error: message, details: payload });
+      return;
+    }
+
+    res.json({
+      data: payload,
+      config: {
+        supabaseUrl: SUPABASE_URL,
+        supabaseAnonKey: SUPABASE_ANON_KEY,
+      },
+    });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown backend error";
+    res.status(500).json({ error: message });
+  }
+});
+
+app.post("/api/auth/reset-password", async (req, res) => {
+  if (!requireSupabaseConfig(res)) {
+    return;
+  }
+
+  const email = typeof req.body?.email === "string" ? req.body.email : "";
+  const redirectTo =
+    typeof req.body?.redirectTo === "string" && req.body.redirectTo
+      ? req.body.redirectTo
+      : "mofitness://auth/reset-password";
+  if (!email.trim()) {
+    res.status(400).json({ error: "Email is required." });
+    return;
+  }
+
+  try {
+    const { response, payload } = await supabaseAuthRequest("recover", {
+      method: "POST",
+      body: { email, redirect_to: redirectTo },
+    });
+    if (!response.ok) {
+      const message =
+        typeof payload === "object" && payload && payload.msg
+          ? payload.msg
+          : "Unable to request password reset.";
+      res.status(response.status).json({ error: message, details: payload });
+      return;
+    }
+
+    res.json({ ok: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown backend error";
+    res.status(500).json({ error: message });
+  }
+});
+
+app.post("/api/auth/sign-out", async (req, res) => {
+  if (!requireSupabaseConfig(res)) {
+    return;
+  }
+
+  const authHeader = req.headers.authorization;
+  const hasBearer = typeof authHeader === "string" && authHeader.toLowerCase().startsWith("bearer ");
+  if (!hasBearer) {
+    res.status(401).json({ error: "Missing Authorization bearer token." });
+    return;
+  }
+
+  const accessToken = authHeader.slice(7).trim();
+  if (!accessToken) {
+    res.status(401).json({ error: "Missing access token." });
+    return;
+  }
+
+  try {
+    const { response, payload } = await supabaseAuthRequest("logout", {
+      method: "POST",
+      accessToken,
+      body: { scope: "global" },
+    });
+    if (!response.ok) {
+      const message =
+        typeof payload === "object" && payload && payload.msg
+          ? payload.msg
+          : "Unable to sign out.";
+      res.status(response.status).json({ error: message, details: payload });
+      return;
+    }
+
+    res.json({ ok: true });
+  } catch (error) {
+    const message = error instanceof Error ? error.message : "Unknown backend error";
+    res.status(500).json({ error: message });
+  }
 });
 
 app.post("/api/functions/:name", async (req, res) => {
